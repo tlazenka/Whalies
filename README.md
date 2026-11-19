@@ -1,12 +1,14 @@
 # 🇪🇪 Gray Whale 🇪🇪
 
+_Scala.js live at https://tlazenka.github.io/WhaleyWeb/_
+
 ## iOS/Mac
 
 | Scheme | App | Destinations | | |
 | --- | --- | --- |  --- |  --- |
-| `Whaley` | SpriteKit Gray Whale | iOS Simulator, iPhone/iPad, Mac Catalyst | <img width="1206" height="2622" alt="whale2" src="https://github.com/user-attachments/assets/b738f89e-cb83-41fc-9834-e21a7d2d0055" /> | <img width="1206" height="2622" alt="whale1" src="https://github.com/user-attachments/assets/2deae17c-f220-492b-8758-adae6b08a0ac" /> |
-| `StadiumApp` | RealityKit WhaleKart | iPhone/iPad/Mac Catalyst | <img width="1206" height="2622" alt="kart2" src="https://github.com/user-attachments/assets/58aa1eaf-8e4e-4067-ae73-899e699b9395" /> | <img width="1206" height="2622" alt="kart1" src="https://github.com/user-attachments/assets/3c2c64ab-7e3e-4297-a449-7e2b30ea788f" /> |
-| `WhaleyCLI` | whaley/whaley-relay | Mac | <img width="664" height="295" alt="cli1" src="https://github.com/user-attachments/assets/26df06bf-91b4-45a9-9d96-84bd1c38294a" /> |
+| `Whaley` | SpriteKit Gray Whale | iOS Simulator, iPhone/iPad, Mac Catalyst | <img width="1206" height="2622" alt="whale2" src="https://github.com/user-attachments/assets/e7ef54a6-72e1-4a68-9d3f-6dd1da4a91dc" /> | <img width="1206" height="2622" alt="whale1" src="https://github.com/user-attachments/assets/54d286b6-f2a3-4226-b5cc-384d3b6bd4f6" /> |
+| `StadiumApp` | RealityKit WhaleKart | iPhone/iPad/Mac Catalyst | <img width="1206" height="2622" alt="kart2" src="https://github.com/user-attachments/assets/3406f47f-f658-447f-bdc9-9feea5b155d6" /> | <img width="1206" height="2622" alt="kart1" src="https://github.com/user-attachments/assets/31dd6409-b29c-4c3f-ac54-ff22fb610b3c" /> |
+| `WhaleyCLI` | whaley/whaley-relay | Mac | <img width="664" height="295" alt="cli1" src="https://github.com/user-attachments/assets/7e07cfc4-7f7b-4a1e-9bd7-99608b445c12" /> |
 | `Whaley2010` | cocos2d Gray Whale ca. 2010 | iPhone/iPad/Mac Catalyst | | |
 | `WhaleyWebKit` | Scala.js/Canvas game bundled for `WKWebView` | iPhone/iPad/Mac Catalyst | | |
 
