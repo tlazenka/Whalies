@@ -60,12 +60,8 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
-Demos/Earthquakes.xcodeproj
-Demos/Info.plist
 
 /.idea
-
-modules/play/logs/
 
 # mac
 .DS_Store
@@ -186,5 +182,15 @@ kotlin-ide/
 .cpcache
 .bsp
 __pycache__
-sol/broadcast
-Demos/MuttniksDemos.xcodeproj
+*.egg-info/
+.venv/
+
+# XcodeGen writes these from Apps/project.yml.
+Apps/Whaley/Info.plist
+Apps/Whaley.xcodeproj
+Apps/Whaley2010/Info.plist
+Apps/WhaleyWebKit/Info.plist
+
+# Scala.js app payload built from Scala/target/web during Xcode build.
+Apps/WhaleyWebBundle/**
+!Apps/WhaleyWebBundle/.keep

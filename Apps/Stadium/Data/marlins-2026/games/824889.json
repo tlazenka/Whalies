@@ -1,0 +1,18 @@
+{
+  "gamePk": 824889,
+  "date": "2026-08-05",
+  "away": "Miami Marlins",
+  "home": "Atlanta Braves",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Riley, A (10, throw).", "PB": null}
+  },
+  "allPlaysCount": 69,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 7, "half": "top", "chargedTo": "home", "fielder": "Austin Riley", "position": "3B",
+     "kind": "throwing", "batter": "Heriberto Hernández", "consequence": "Hernández reached on Riley's throwing error and advanced to second", "runScored": false}
+  ],
+  "notes": ""
+}

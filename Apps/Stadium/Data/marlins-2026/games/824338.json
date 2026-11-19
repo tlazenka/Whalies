@@ -1,0 +1,20 @@
+{
+  "gamePk": 824338,
+  "date": "2026-06-30",
+  "away": "Miami Marlins",
+  "home": "Colorado Rockies",
+  "linescoreErrors": {"away": 0, "home": 2},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Carrigg (1, fielding); Rumfield (2, fielding).", "PB": null}
+  },
+  "allPlaysCount": 88,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 2, "half": "top", "chargedTo": "home", "fielder": "Cole Carrigg", "position": "CF",
+     "kind": "fielding", "batter": "Javier Sanoja", "consequence": "Sanoja singled on a grounder and took second on the fielding error; no other runners on", "runScored": false},
+    {"inning": 7, "half": "top", "chargedTo": "home", "fielder": "TJ Rumfield", "position": "1B",
+     "kind": "fielding", "batter": "Liam Hicks", "consequence": "Hicks reached first on the fielding error; no runners on", "runScored": false}
+  ],
+  "notes": ""
+}

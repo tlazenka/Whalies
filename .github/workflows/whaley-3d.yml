@@ -1,0 +1,55 @@
+name: Whaley 3D projection
+
+on:
+  push:
+    branches: [develop, feature/whaley-3d-projection, experiment/whaley-3d-infinite-bubble]
+    paths:
+      - "Sources/WhaleyCore/WhaleySceneSnapshot.swift"
+      - "Sources/WhaleyCore/WhaleyProjection3D.swift"
+      - "Sources/WhaleyCore/WhaleyBubbleOptics.swift"
+      - "Sources/WhaleyCore/Whaley3DJumpCamera.swift"
+      - "Sources/WhaleyCore/Whaley3DHoldSession.swift"
+      - "Sources/WhaleyCore/Whaley3DPressRouter.swift"
+      - "Sources/WhaleyObjectiveC/**"
+      - "Tests/WhaleyArenaRulesTests/**"
+      - "Tests/WhaleyCoreTests/WhaleyProjection3DTests.swift"
+      - "Tests/WhaleyCoreTests/WhaleyBubbleOpticsTests.swift"
+      - "Tests/WhaleyCoreTests/Whaley3DJumpCameraTests.swift"
+      - "Tests/WhaleyCoreTests/Whaley3DHoldSessionTests.swift"
+      - "Tests/WhaleyCoreTests/Whaley3DPressRouterTests.swift"
+      - "Tests/WhaleyCoreTests/WhaleyVisiblePlayerTests.swift"
+      - "Tests/WhaleyCoreTests/WhaleyAuthoritativeGeometryTests.swift"
+      - "Apps/Whaley/check-3d-projection.sh"
+      - ".github/workflows/whaley-3d.yml"
+  pull_request:
+    paths:
+      - "Sources/WhaleyCore/WhaleySceneSnapshot.swift"
+      - "Sources/WhaleyCore/WhaleyProjection3D.swift"
+      - "Sources/WhaleyCore/WhaleyBubbleOptics.swift"
+      - "Sources/WhaleyCore/Whaley3DJumpCamera.swift"
+      - "Sources/WhaleyCore/Whaley3DHoldSession.swift"
+      - "Sources/WhaleyCore/Whaley3DPressRouter.swift"
+      - "Sources/WhaleyObjectiveC/**"
+      - "Tests/WhaleyArenaRulesTests/**"
+      - "Tests/WhaleyCoreTests/WhaleyProjection3DTests.swift"
+      - "Tests/WhaleyCoreTests/WhaleyBubbleOpticsTests.swift"
+      - "Tests/WhaleyCoreTests/Whaley3DJumpCameraTests.swift"
+      - "Tests/WhaleyCoreTests/Whaley3DHoldSessionTests.swift"
+      - "Tests/WhaleyCoreTests/Whaley3DPressRouterTests.swift"
+      - "Tests/WhaleyCoreTests/WhaleyVisiblePlayerTests.swift"
+      - "Tests/WhaleyCoreTests/WhaleyAuthoritativeGeometryTests.swift"
+      - "Apps/Whaley/check-3d-projection.sh"
+      - ".github/workflows/whaley-3d.yml"
+
+jobs:
+  projection:
+    runs-on: ubuntu-latest
+    container: swift:6.4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test shared C arena geometry and bubble rules
+        run: |
+          clang -std=c11 -Wall -Wextra -Werror -I Sources/WhaleyObjectiveC/include Tests/WhaleyArenaRulesTests/arena_rules.c -lm -o /tmp/whaley-arena-rules
+          /tmp/whaley-arena-rules
+      - name: Verify Whaley 3D projection without Apple frameworks
+        run: bash Apps/Whaley/check-3d-projection.sh

@@ -1,0 +1,18 @@
+{
+  "gamePk": 823861,
+  "date": "2026-05-24",
+  "away": "New York Mets",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Sanoja (5, throw).", "PB": null}
+  },
+  "allPlaysCount": 76,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 2, "half": "top", "chargedTo": "home", "fielder": "Javier Sanoja", "position": "3B",
+     "kind": "throwing", "batter": "Marcus Semien", "consequence": "Semien reached base and advanced to second on the throwing error", "runScored": false}
+  ],
+  "notes": ""
+}

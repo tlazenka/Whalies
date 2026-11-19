@@ -1,0 +1,18 @@
+{
+  "gamePk": 823889,
+  "date": "2026-04-01",
+  "away": "Chicago White Sox",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Smith, S (1, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 73,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "bottom", "chargedTo": "away", "fielder": "Shane Smith", "position": "P",
+     "kind": "throwing", "batter": "Otto Lopez", "consequence": "Lopez reached on a fielder's choice; Jakob Marsee went from second to third on the throwing error", "runScored": false}
+  ],
+  "notes": ""
+}

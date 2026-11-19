@@ -1,0 +1,18 @@
+{
+  "gamePk": 822728,
+  "date": "2026-06-02",
+  "away": "Miami Marlins",
+  "home": "Washington Nationals",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Jiménez, L (3, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 74,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 7, "half": "bottom", "chargedTo": "away", "fielder": "Leo Jiménez", "position": "3B",
+     "kind": "throwing", "batter": "Dylan Crews", "consequence": "Crews singled and took second on the throwing error; Lile went to third and Abrams scored from second", "runScored": true}
+  ],
+  "notes": ""
+}

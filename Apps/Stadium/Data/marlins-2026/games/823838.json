@@ -1,0 +1,20 @@
+{
+  "gamePk": 823838,
+  "date": "2026-07-28",
+  "away": "Philadelphia Phillies",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Bohm (9, fielding).", "PB": null},
+    "home": {"E": "Stowers (6, throw).", "PB": null}
+  },
+  "allPlaysCount": 66,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 2, "half": "top", "chargedTo": "home", "fielder": "Kyle Stowers", "position": "1B",
+     "kind": "throwing", "batter": "Brandon Marsh", "consequence": "Marsh reached on a fielder's choice; Bohm moved to second on Stowers's throwing error", "runScored": false},
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Alec Bohm", "position": "1B",
+     "kind": "fielding", "batter": "Otto Lopez", "consequence": "Lopez reached first on Bohm's fielding error", "runScored": false}
+  ],
+  "notes": ""
+}

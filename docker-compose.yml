@@ -1,102 +1,44 @@
-name: muttniks
+name: whalekart
 
 services:
   db:
     image: postgres:18-alpine
     environment:
-      POSTGRES_DB: muttniks
-      POSTGRES_USER: muttniks
-      POSTGRES_PASSWORD: muttniks
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: whaley
+      POSTGRES_USER: whaley
+      POSTGRES_PASSWORD: whaley
+    ports: ["5432:5432"]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U muttniks -d muttniks"]
+      test: ["CMD-SHELL", "pg_isready -U whaley -d whaley"]
       interval: 2s
       timeout: 3s
       retries: 30
     volumes:
-      - db-data:/var/lib/postgresql
+      - whaley-db-data:/var/lib/postgresql
 
-  anvil:
-    image: ghcr.io/foundry-rs/foundry:v1.8.3
-    entrypoint: ["anvil"]
-    command: ["--host", "0.0.0.0", "--chain-id", "31337", "--block-time", "1"]
-    ports:
-      - "8545:8545"
-    healthcheck:
-      test: ["CMD", "cast", "block-number", "--rpc-url", "http://127.0.0.1:8545"]
-      interval: 2s
-      timeout: 3s
-      retries: 30
-
-  contracts:
+  server:
     build:
       context: .
-      dockerfile: Dockerfile.contracts
-    image: muttniks-contracts
-    working_dir: /workspace/sol
-    entrypoint: ["forge"]
-    command:
-      - script
-      - script/Deploy.s.sol:DeployAdoption
-      - --rpc-url
-      - http://anvil:8545
-      - --private-key
-      - "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
-      - --broadcast
+      dockerfile: Dockerfile.server
+    working_dir: /workspace/Scala
+    command: ["sbt", "server/run"]
     environment:
-      FOUNDRY_REMAPPINGS: "forge-std/=/opt/forge-std/src/"
+      WHALEY_JDBC_URL: jdbc:postgresql://db:5432/whaley
+      WHALEY_DB_HOST: db
+      WHALEY_DB_PORT: "5432"
+      WHALEY_DB_NAME: whaley
+      WHALEY_DB_USER: whaley
+      WHALEY_DB_PASSWORD: whaley
+      PLAY_HTTP_SECRET_KEY: ${PLAY_HTTP_SECRET_KEY:-dev-only-replace-before-deployment}
+    ports: ["9000:9000"]
     volumes:
-      - ./sol:/workspace/sol
-    depends_on:
-      anvil:
-        condition: service_healthy
-    restart: "no"
-
-  contracts-test:
-    extends:
-      service: contracts
-    profiles: ["test"]
-    command: ["test"]
-    depends_on: !reset {}
-
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile.app
-    environment:
-      MUTTNIKS_JDBC_URL: jdbc:postgresql://db:5432/muttniks
-      MUTTNIKS_DB_HOST: db
-      MUTTNIKS_DB_PORT: "5432"
-      MUTTNIKS_DB_NAME: muttniks
-      MUTTNIKS_DB_USER: muttniks
-      MUTTNIKS_DB_PASSWORD: muttniks
-      DATABASE_HOST: db
-      DATABASE_PORT: "5432"
-      DATABASE_NAME: muttniks
-      DATABASE_USER: muttniks
-      DATABASE_PASSWORD: muttniks
-      ADOPTION_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
-      CHAIN_ID: "31337"
-      ETH_RPC_URL: http://anvil:8545
-      CONFIRMATIONS: "0"
-      START_BLOCK: "0"
-      POLL_INTERVAL: "1s"
-      MUTTNIKS_MAVEN_REPO: /workspace/maven-repo
-      PLAY_HTTP_SECRET_KEY: ${PLAY_HTTP_SECRET_KEY:-2f6b7d3c9a4e8f1b5c0d7a2e6f9b3c8d1a5e7f0c4b8d2a6e9c3f7b1d5a8e0c4f}
-    ports:
-      - "9000:9000"
-    volumes:
-      - ./app:/workspace/app
-      - app-sbt-cache:/root/.sbt
-      - app-coursier-cache:/root/.cache/coursier
+      - ./Scala:/workspace/Scala
+      - ./python:/workspace/python:ro
+      - scala-sbt-cache:/root/.sbt
+      - scala-coursier-cache:/root/.cache/coursier
     depends_on:
       db:
         condition: service_healthy
-      anvil:
-        condition: service_healthy
-      contracts:
-        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:9000/health >/dev/null || exit 1"]
       interval: 5s
@@ -104,90 +46,7 @@ services:
       retries: 60
       start_period: 30s
 
-  likes-test:
-    profiles: ["test"]
-    restart: "no"
-    image: gradle:8.14.3-jdk21
-    working_dir: /workspace/likes
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - "gradle --no-daemon test"
-    volumes:
-      - ./likes:/workspace/likes
-      - likes-gradle-cache:/home/gradle/.gradle
-
-  integration-tests:
-    profiles: ["test"]
-    restart: "no"
-    build:
-      context: .
-      dockerfile: Dockerfile.integration-tests
-    working_dir: /workspace/integration_tests
-    volumes:
-      - ./integration_tests:/workspace/integration_tests
-    environment:
-      API_BASE: http://app:9000
-      RPC_URL: http://anvil:8545
-      ADOPTION_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
-    depends_on:
-      anvil:
-        condition: service_healthy
-      contracts:
-        condition: service_completed_successfully
-      app:
-        condition: service_healthy
-
-  postgres:
-    image: postgres:18
-    environment:
-      POSTGRES_USER: earthquake
-      POSTGRES_DB: earthquakes
-      POSTGRES_HOST_AUTH_METHOD: trust
-    volumes:
-      - postgres-data:/var/lib/postgresql
-      - ./Demos/FeedServer/migrations/001-photos.sql:/docker-entrypoint-initdb.d/001-photos.sql:ro
-      - ./Demos/FeedServer/migrations/002-auth.sql:/docker-entrypoint-initdb.d/002-auth.sql:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U earthquake -d earthquakes"]
-      interval: 3s
-      timeout: 3s
-      retries: 20
-
-  feed-server:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    working_dir: /workspace
-    command: ["swift", "run", "--skip-build", "feed-server"]
-    restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      PORT: 8080
-      PGHOST: postgres
-      PGPORT: 5432
-      PGUSER: earthquake
-      PGDATABASE: earthquakes
-    ports:
-      - "${FEED_PORT:-8080}:8080"
-    healthcheck:
-      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/8080'"]
-      interval: 5s
-      timeout: 3s
-      retries: 12
-      start_period: 5s
-
-  earthquakes-cli:
-    profiles: ["cli"]
-    build:
-      context: .
-      dockerfile: Dockerfile
-    working_dir: /workspace
-    entrypoint: ["swift", "run", "--skip-build", "earthquakes"]
-    stdin_open: true
-    tty: true
-
+  # Live observation stays read-only, not cooperative gameplay.
   whaley-relay:
     build:
       context: .
@@ -196,6 +55,7 @@ services:
     command: ["swift", "run", "--skip-build", "whaley-relay"]
     environment:
       WHALEY_RELAY_PORT: "8092"
+      WHALEY_RELAY_MAX_AGE: "${WHALEY_RELAY_MAX_AGE:-2}"
     ports:
       - "${WHALEY_RELAY_PORT:-8092}:8092"
     restart: unless-stopped
@@ -212,6 +72,7 @@ services:
       WHALEY_RELAY_PORT: "8092"
     stdin_open: true
     tty: true
+    depends_on: [whaley-relay]
 
   swift-build:
     profiles: ["build"]
@@ -230,8 +91,6 @@ services:
     command: ["swift", "test"]
 
 volumes:
-  postgres-data:
-  db-data:
-  app-sbt-cache:
-  app-coursier-cache:
-  likes-gradle-cache:
+  whaley-db-data:
+  scala-sbt-cache:
+  scala-coursier-cache:

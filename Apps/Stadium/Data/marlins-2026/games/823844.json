@@ -1,0 +1,18 @@
+{
+  "gamePk": 823844,
+  "date": "2026-07-11",
+  "away": "Cleveland Guardians",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Lopez, O (13, fielding).", "PB": null}
+  },
+  "allPlaysCount": 75,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 7, "half": "top", "chargedTo": "home", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "fielding", "batter": "Steven Kwan", "consequence": "Kwan reached base on the fielding error; no other runners mentioned", "runScored": false}
+  ],
+  "notes": ""
+}

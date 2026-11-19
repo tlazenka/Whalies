@@ -1,0 +1,22 @@
+{
+  "gamePk": 823839,
+  "date": "2026-07-27",
+  "away": "Philadelphia Phillies",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 2, "home": 1},
+  "boxscore": {
+    "away": {"E": "Realmuto (6, throw); Turner (18, throw).", "PB": null},
+    "home": {"E": "Hernández, H (3, throw).", "PB": null}
+  },
+  "allPlaysCount": 82,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 6, "half": "top", "chargedTo": "home", "fielder": "Heriberto Hernández", "position": "LF",
+     "kind": "throwing", "batter": "Justin Crawford", "consequence": "Crawford singled and reached second on the throwing error; Stott and Realmuto scored", "runScored": true},
+    {"inning": 1, "half": "bottom", "chargedTo": "away", "fielder": "J.T. Realmuto", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "Otto Lopez stole second; the catcher's throw was an error and, with a second error by the shortstop on the same play, Lopez came around to score", "runScored": true, "source": "playEvents"},
+    {"inning": 1, "half": "bottom", "chargedTo": "away", "fielder": "Trea Turner", "position": "SS",
+     "kind": "throwing", "batter": null, "consequence": "second error on the same steal as the Realmuto error above; the shortstop's throw was an error and Lopez scored", "runScored": true, "source": "playEvents"}
+  ],
+  "notes": ""
+}

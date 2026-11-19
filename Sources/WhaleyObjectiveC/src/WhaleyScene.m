@@ -5,72 +5,19 @@
 #if __has_include(<UIKit/UIKit.h>)
 
 #import "WhaleyScene.h"
+#import "WhaleyTrajectory.h"
+#import "WhaleyScoring.h"
+#import "WhaleyLevelArtwork.h"
+#import "SimpleAudioEngine.h"
+#import "WhaleyHud.h"
+#import "MainMenu.h"
 #import "GameState.h"
-
-static NSMutableArray *WhaleyTrajectoryTimes = nil;
-static NSMutableArray *WhaleyTrajectoryPositions = nil;
-static NSTimeInterval WhaleySemanticElapsedTime = 0;
-
-void WhaleySrcTrajectoryReset(void) {
-    [WhaleyTrajectoryTimes release];
-    [WhaleyTrajectoryPositions release];
-    WhaleyTrajectoryTimes = [[NSMutableArray alloc] init];
-    WhaleyTrajectoryPositions = [[NSMutableArray alloc] init];
-    WhaleySemanticElapsedTime = 0;
-}
-
-static void WhaleySrcTrajectoryRecord(Player *player, ccTime dt) {
-    if (!player) {
-        return;
-    }
-    if (!WhaleyTrajectoryTimes) {
-        WhaleySrcTrajectoryReset();
-    }
-    WhaleySemanticElapsedTime += MAX(0, dt);
-    [WhaleyTrajectoryTimes addObject:@(WhaleySemanticElapsedTime)];
-    [WhaleyTrajectoryPositions addObject:[NSValue valueWithCGPoint:player.position]];
-    const NSUInteger maximumSamples = 36000;
-    if (WhaleyTrajectoryTimes.count > maximumSamples) {
-        [WhaleyTrajectoryTimes removeObjectAtIndex:0];
-        [WhaleyTrajectoryPositions removeObjectAtIndex:0];
-    }
-}
-
-NSUInteger WhaleySrcTrajectorySampleCount(void) { return WhaleyTrajectoryTimes.count; }
-NSTimeInterval WhaleySrcTrajectoryFirstTime(void) { return WhaleyTrajectoryTimes.count ? [WhaleyTrajectoryTimes[0] doubleValue] : 0; }
-NSTimeInterval WhaleySrcTrajectoryLastTime(void) { return WhaleyTrajectoryTimes.count ? [[WhaleyTrajectoryTimes lastObject] doubleValue] : 0; }
-NSTimeInterval WhaleySrcSemanticTime(void) { return WhaleySemanticElapsedTime; }
-
-BOOL WhaleySrcTrajectoryProjectPlayer(Player *player, NSTimeInterval seconds) {
-    NSUInteger count = WhaleyTrajectoryTimes.count;
-    if (!player || count == 0) {
-        return NO;
-    }
-    NSTimeInterval target = MAX(0, seconds);
-    if (target <= [WhaleyTrajectoryTimes[0] doubleValue]) {
-        player.position = [WhaleyTrajectoryPositions[0] CGPointValue];
-        return YES;
-    }
-    if (target >= [[WhaleyTrajectoryTimes lastObject] doubleValue]) {
-        player.position = [[WhaleyTrajectoryPositions lastObject] CGPointValue];
-        return YES;
-    }
-    for (NSUInteger i = 1; i < count; ++i) {
-        NSTimeInterval upperTime = [WhaleyTrajectoryTimes[i] doubleValue];
-        if (upperTime < target) {
-            continue;
-        }
-        NSTimeInterval lowerTime = [WhaleyTrajectoryTimes[i - 1] doubleValue];
-        CGPoint lower = [WhaleyTrajectoryPositions[i - 1] CGPointValue];
-        CGPoint upper = [WhaleyTrajectoryPositions[i] CGPointValue];
-        double span = upperTime - lowerTime;
-        double fraction = span > 0 ? (target - lowerTime) / span : 0;
-        player.position = CGPointMake(lower.x + (upper.x - lower.x) * fraction,
-                                      lower.y + (upper.y - lower.y) * fraction);
-        return YES;
-    }
-    return NO;
-}
+#import "Whaley3DArena.inc"
+#import "WhaleyHostHooks.h"
+#if defined(WHALEY_SPRITEKIT_COMPAT)
+#import "WhaleyBootstrap.h"
+#import "WhaleyExpressionPresentation.h"
+#endif
 
 @implementation Whaley
 
@@ -98,6 +45,12 @@ BOOL WhaleySrcTrajectoryProjectPlayer(Player *player, NSTimeInterval seconds) {
 @synthesize spoutSpriteSheet = _spoutSpriteSheet;
 @synthesize spout = _spout;
 @synthesize bubbleFileName = _bubbleFileName;
+
+// These are opt-in projection controls, not a new game engine.
+BOOL WhaleyScene3DModeEnabled = NO;
+BOOL WhaleyScene3DPlaceAtAnchor = NO;
+CGPoint WhaleyScene3DJumpAnchorBottom = {0, 0};
+NSUInteger WhaleyScene3DJumpSequence = 0;
 
 const BOOL UseRelativeProjectileOffset = YES;
 const BOOL UseProjectileOffset = NO;
@@ -138,28 +91,19 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
 
     Whaley *gameLayer = [[[Whaley alloc] initWithLevel:level withGameMode:gameMode] autorelease];
 
-    NSString *backgroundFileName = nil;
-    if ([Helpers isiPhone5]) {
-        backgroundFileName = @"level%d-568h.png";
-    } else {
-        backgroundFileName = @"level%d.png";
-    }
-
-    CCSprite *background = [CCSprite spriteWithFile:[NSString stringWithFormat:backgroundFileName, gameLayer.level.num]];
+    CGSize s = [[CCDirector sharedDirector] winSize];
+    // The foreground style does not replace the level painting.
+    NSString *backgroundFileName = WhaleyLevelArtworkFilename(gameLayer.level.num, [Helpers isiPhone5]);
+    CCSprite *background = [CCSprite spriteWithFile:backgroundFileName];
     background.ignoreAnchorPointForPosition = NO;
     background.anchorPoint = ccp(0, 0);
-
-    CGSize s = [[CCDirector sharedDirector] winSize];
-
     background.scaleX = s.width / background.contentSize.width;
     background.scaleY = s.height / background.contentSize.height;
     background.opacity = 190;
+    background.position = gameLayer.tileMap.position;
+    [scene addChild:background z:-100];
 
-    background.position = ccp(gameLayer.tileMap.position.x,
-                              gameLayer.tileMap.position.y);
-    [scene addChild:background];
-
-    [scene addChild:gameLayer];
+    [scene addChild:gameLayer z:0];
 
     WhaleyHud *hud = [WhaleyHud initAsColorLayer:gameLayer];
     [scene addChild:hud];
@@ -177,18 +121,17 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
                                                           height:24];
             overlay.anchorPoint = ccp(0, 0);
             overlay.position = ccp(0, 0);
-            [scene addChild:overlay];
+            [scene addChild:overlay z:110];
         }
     }
 
     if (level.num >= WaterLevelStart) {
-        CCLayerColor *layer = [CCLayerColor layerWithColor:ccc4(102, 102, 255, 0x80) width:s.width height:s.height];
+        CCLayerColor *layer = [CCLayerColor layerWithColor:ccc4(102, 102, 255, 64) width:s.width height:s.height];
         layer.anchorPoint = ccp(0, 0);
         layer.position = ccp(gameLayer.tileMap.position.x,
                              gameLayer.tileMap.position.y);
-        [scene addChild:layer];
-    } else if ((SHOW_SCANLINES)
-               && (level.num != 3)) {
+        [scene addChild:layer z:100];
+    } else if (SHOW_SCANLINES && level.num != 3) {
         NSString *backgroundFileName = nil;
         if ([Helpers isiPhone5]) {
             backgroundFileName = @"scanlines-568h.png";
@@ -196,6 +139,7 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
             backgroundFileName = @"scanlines.png";
         }
         CCSprite *layer = [CCSprite spriteWithFile:backgroundFileName];
+        layer.opacity = 128;
         layer.anchorPoint = ccp(0, 0);
         layer.position = ccp(gameLayer.tileMap.position.x,
                              gameLayer.tileMap.position.y);
@@ -216,6 +160,9 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
         _touchSustained = NO;
         _isPaused = NO;
         WhaleySrcTrajectoryReset();
+        WhaleyScene3DJumpSequence = 0;
+        WhaleyScene3DJumpAnchorBottom = CGPointZero;
+        WhaleyScene3DPlaceAtAnchor = NO;
         _phase = 0;
         _currentLocation = ccp(-1, -1);
 
@@ -373,21 +320,24 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
         self.spoutSpriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"spout.png"];
         [self addChild:self.spoutSpriteSheet z:PlayerZorder];
         self.spoutSpriteSheet.visible = NO;
+        self.spout = [CCSprite spriteWithSpriteFrameName:@"spout1.png"];
+        self.spout.anchorPoint = ccp(0, 0);
+        [self.spoutSpriteSheet addChild:self.spout];
+#if !defined(WHALEY_SPRITEKIT_COMPAT)
+        // The original cocos2d renderer animates the CCSprite directly.
         NSMutableArray *spoutAnimFrames = [NSMutableArray array];
         for (NSInteger i = 1; i <= 4; ++i) {
             [spoutAnimFrames addObject:
-                                 [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
-                                                                                  [NSString stringWithFormat:@"spout%d.png", i]]];
+                [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:
+                    [NSString stringWithFormat:@"spout%ld.png", (long)i]]];
         }
-        CCAnimation *spoutAnim = [CCAnimation animationWithSpriteFrames:spoutAnimFrames delay:0.1f];
+        CCAnimation *spoutAnim =
+            [CCAnimation animationWithSpriteFrames:spoutAnimFrames delay:0.1f];
         spoutAnim.restoreOriginalFrame = NO;
         self.player.spoutAction = [CCRepeatForever actionWithAction:
-                                                       [CCAnimate actionWithAnimation:spoutAnim]];
-
-        self.spout = [CCSprite spriteWithSpriteFrameName:@"spout1.png"];
-        self.spout.anchorPoint = ccp(0, 0);
+            [CCAnimate actionWithAnimation:spoutAnim]];
         [self.spout runAction:self.player.spoutAction];
-        [self.spoutSpriteSheet addChild:self.spout];
+#endif
 
         self.bounceSound = [[SimpleAudioEngine sharedEngine] soundSourceForFile:@"bounce01.wav"];
         self.flameSound = [[SimpleAudioEngine sharedEngine] soundSourceForFile:@"flame01.wav"];
@@ -418,6 +368,12 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
         }
 
         _ceilingFactor = 1;
+        WhaleySceneApply3DEnvironment(self);
+        _numBubbles = self.projectiles.count;
+#if defined(WHALEY_SPRITEKIT_COMPAT)
+        _expressionPresentation = [[WhaleyExpressionPresentation alloc] initWithPlayer:self.player];
+        if (_expressionPresentation) [self schedule:@selector(updateExpression:)];
+#endif
     }
     return self;
 }
@@ -429,6 +385,10 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
 }
 
 - (BOOL)isAtGround:(CGPoint)position {
+    if (WhaleyScene3DModeEnabled) {
+        WhaleyArenaLayout a = Whaley3DLayout(self);
+        return a.valid && position.y <= a.bottom + 0.00001;
+    }
     NSMutableArray *tempResult = [Helpers isAt:position
                                    withTileMap:self.tileMap
                                      withLayer:self.meta
@@ -441,6 +401,10 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
 }
 
 - (BOOL)isAtWall:(CGPoint)position withDx:(NSInteger)dx withDy:(NSInteger)dy {
+    if (WhaleyScene3DModeEnabled) {
+        return WhaleyArenaBlocksRect(Whaley3DLayout(self), position.x + dx, position.y + dy,
+                                    self.player.scaledWidth, self.player.scaledHeight);
+    }
     NSMutableArray *tempResult = [Helpers isAt:position
                                    withTileMap:self.tileMap
                                      withLayer:self.meta
@@ -473,6 +437,7 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
 }
 
 - (BOOL)isProjectileAtFlame:(Projectile *)projectile {
+    if (Whaley3DIsFoundation(projectile)) return NO;
     CGRect projectileRect = [Helpers spriteRectangle:projectile];
     for (Hazard *hazard in self.hazards) {
         if (!hazard.visible) {
@@ -508,6 +473,7 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
 }
 
 - (BOOL)playerIsRestingOnGroundTile {
+    if (WhaleyScene3DModeEnabled) return [self isAtGround:self.player.position];
     return ((([self isAtGround:self.player.position])
              || (!([self ableToMoveDown:self.player.yAdd])))
             && ([Helpers isYposExactlyOnTile:self.player.position withTileMap:self.tileMap]));
@@ -526,6 +492,10 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
 }
 
 - (void)removeProjectile:(Projectile *)projectile {
+    // Arena teardown removes foundations directly; gameplay never consumes them.
+    if (Whaley3DIsFoundation(projectile) || WhaleyHostProjectileIsFixed(projectile) ||
+        [self.projectiles indexOfObjectIdenticalTo:projectile] == NSNotFound) return;
+    WhaleyObserveProjectileRemoval(self, projectile);
     [self removeChild:projectile cleanup:YES];
     _numBubbles--;
     [self.projectiles removeObject:projectile];
@@ -614,7 +584,7 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
 
     NSMutableArray *tempFrozenProjectiles = [NSMutableArray new];
     for (Projectile *projectile in self.projectiles) {
-        if (projectile.isFrozen) {
+        if (projectile.isFrozen && !Whaley3DIsFoundation(projectile)) {
             [tempFrozenProjectiles addObject:projectile];
         }
     }
@@ -673,25 +643,14 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
 }
 
 - (BOOL)ccTouchBegan:(UITouch *)touch withEvent:(UIEvent *)event {
+    WhaleySceneApply3DEnvironment(self);
+    _numBubbles = self.projectiles.count;
     CGPoint absoluteTouchLocation = [touch locationInView:[touch view]];
     absoluteTouchLocation = [[CCDirector sharedDirector] convertToGL:absoluteTouchLocation];
     CGPoint touchLocation = [self convertToNodeSpace:absoluteTouchLocation];
 
-    CGRect selfRect = CGRectMake(self.hud.position.x - (self.hud.contentSize.width / 2),
-                                 self.hud.position.y - (self.hud.contentSize.height / 2),
-                                 self.hud.contentSize.width,
-                                 self.hud.contentSize.height);
-
-    if (CGRectContainsPoint(selfRect, absoluteTouchLocation)) {
-        if (!(_isPaused)) {
-            [self.hud pauseGame:self];
-        } else if ((!(self.player.isDead))
-                   && (!(self.player.hasWon))) {
-            [self.hud resumeLevel:self];
-        }
-
-        return NO;
-    }
+    // WhaleyHud (a sibling SpriteKit node) receives top-bar taps natively.
+    // Do not also interpret HUD coordinates as gameplay input here.
 
     if (_isPaused) {
         return NO;
@@ -714,7 +673,7 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
                 withIsFrozen:NO
                 withSizeMode:SmallSize
             withIsBeingMoved:NO
-             withBouncesLeft:_defaultBounces];
+             withBouncesLeft:(WhaleyScene3DModeEnabled ? 1 : _defaultBounces)];
 
         projectile.sizeMode = SmallSize;
 
@@ -739,7 +698,7 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
 
         CGFloat projectileDestinationX;
 
-        if (_allowMiddleBounce) {
+        if (_allowMiddleBounce || WhaleyScene3DModeEnabled) {
             if ((playerCenter.x - touchLocation.x) > ((self.player.scaledWidth / 2) + MIDDLE_BOUNCE_RANGE)) {
                 projectileDestinationX = self.player.position.x;
                 self.player.flipX = NO;
@@ -760,12 +719,22 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
             }
         }
 
+        if (WhaleyScene3DModeEnabled && WhaleyScene3DPlaceAtAnchor) {
+            // 3D presses during a jump launch back at the current jump origin.
+            // Retain the lateral intent from the very same Obj-C bounce logic.
+            projectileDestinationX += WhaleyScene3DJumpAnchorBottom.x - playerCenter.x;
+            projectileDestinationY = MAX(0, WhaleyScene3DJumpAnchorBottom.y - projectile.scaledHeight - 1);
+        }
+
         projectile.position = ccp(projectileDestinationX, self.player.position.y);
         projectile.scaleX = ReallySmallScale;
         projectile.scaleY = ReallySmallScale;
 
-        if (_numBubbles >= MAX_BUBBLES) {
-            [self removeProjectile:[self.projectiles objectAtIndex:0]];
+        NSInteger capacityCount = WhaleyScene3DModeEnabled ? (NSInteger)Whaley3DShotCount(self) : _numBubbles;
+        if (capacityCount >= MAX_BUBBLES) {
+            for (Projectile *old in [[self.projectiles copy] autorelease]) {
+                if (!Whaley3DIsFoundation(old)) { [self removeProjectile:old]; break; }
+            }
         }
 
         if (!(_hasInfiniteBubbles)) {
@@ -887,7 +856,7 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
 
 - (void)doProjectiles {
     for (Projectile *projectile in self.projectiles) {
-        if ((projectile.isFrozen)
+        if (!WhaleyHostOwnsProjectile(projectile) && !Whaley3DIsFoundation(projectile) && (projectile.isFrozen)
             && (!(projectile.isBeingMoved))
             && (projectile.position.y < ((self.tileMap.mapSize.height * self.tileMap.tileSize.height) - projectile.scaledHeight - 1))) {
             projectile.position = ccp(projectile.position.x, projectile.position.y + 0.5);
@@ -895,9 +864,9 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
     }
 
     for (Projectile *projectile1 in self.projectiles) {
-        if ((projectile1.isFrozen) && (!(projectile1.isBeingMoved))) {
+        if (!WhaleyHostOwnsProjectile(projectile1) && !Whaley3DIsFoundation(projectile1) && (projectile1.isFrozen) && (!(projectile1.isBeingMoved))) {
             for (Projectile *projectile2 in self.projectiles) {
-                if ((projectile1 != projectile2) && (projectile2.isFrozen) && (!(projectile2.isBeingMoved))) {
+                if (!WhaleyHostOwnsProjectile(projectile2) && !Whaley3DIsFoundation(projectile2) && (projectile1 != projectile2) && (projectile2.isFrozen) && (!(projectile2.isBeingMoved))) {
                     [Projectile projectileCollides:projectile1
                                     withProjectile:projectile2
                                         withOffset:(projectile1.scaledWidth - 2)
@@ -908,14 +877,48 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
     }
 }
 
+#if defined(WHALEY_SPRITEKIT_COMPAT)
+- (void)updateExpression:(ccTime)dt {
+    [_expressionPresentation advance:self seconds:dt];
+}
+
+// Only the SpriteKit adapter exposes SKSpriteNode and SKTexture.
+- (void)startSpoutAnimation {
+    SKSpriteNode *sprite = self.spout.spriteKitNode;
+    if (!sprite) return;
+    NSMutableArray<SKTexture *> *textures = [NSMutableArray array];
+    for (NSInteger i = 1; i <= 4; i++) {
+        NSString *name = [NSString stringWithFormat:@"spout%ld.png", (long)i];
+        CCSpriteFrame *frame = [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:name];
+        if (!frame || frame.atlasSize.width <= 0 || frame.atlasSize.height <= 0) return;
+        CGRect r = frame.frameRect;
+        SKTexture *atlas = WhaleySrcTexture(frame.atlasFile);
+        CGRect uv = CGRectMake(r.origin.x / frame.atlasSize.width,
+            1 - (CGRectGetMaxY(r) / frame.atlasSize.height),
+            r.size.width / frame.atlasSize.width, r.size.height / frame.atlasSize.height);
+        SKTexture *texture = [SKTexture textureWithRect:uv inTexture:atlas];
+        texture.filteringMode = atlas.filteringMode;
+        [textures addObject:texture];
+    }
+    [sprite removeAllActions];
+    // All four trimmed frames share the same bottom edge; the zero anchor
+    // keeps the water spout planted rather than bouncing with frame height.
+    sprite.anchorPoint = CGPointZero;
+    sprite.position = CGPointZero;
+    [sprite runAction:[SKAction repeatActionForever:
+        [SKAction animateWithTextures:textures timePerFrame:0.1
+                                 resize:YES restore:NO]] withKey:@"whaley-spout"];
+}
+#endif // WHALEY_SPRITEKIT_COMPAT
+
 - (void)playerDead:(id)sender {
     [self.hud replayLevel:self];
 }
 
 - (NSInteger)calculateScore {
-    return (NSInteger)((self.level.totalCollectibles * 100)
-                       + (5000 / (self.level.bubblesUsed + 1))
-                       + (30000 / (self.level.totalTime + .1)));
+    return WhaleyCalculateScore(self.level.totalCollectibles,
+                                self.level.bubblesUsed,
+                                self.level.totalTime);
 }
 
 - (void)playerWon:(id)sender {
@@ -923,11 +926,14 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
 }
 
 - (void)gameLoop:(ccTime)dt {
+    WhaleySceneApply3DEnvironment(self);
+    _numBubbles = self.projectiles.count;
     if (_isPaused) {
         return;
     }
     self.level.totalTime += dt;
-    if (([self isAtFlame:self.player.position withDx:0 withDy:0 withPhase:[[NSNumber numberWithInt:_phase] stringValue]])
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"whaley.debug.invincibilityEnabled"]
+        && ([self isAtFlame:self.player.position withDx:0 withDy:0 withPhase:[[NSNumber numberWithInt:_phase] stringValue]])
         && (!(self.player.isDead))) {
         if (!(self.flameSound.isPlaying)) {
             [self.flameSound play];
@@ -938,6 +944,7 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
         }
         // self.player.isMovingLaterally = NO;
         self.player.isDead = YES;
+        WhaleyObserveDeath(self);
         self.player.flipY = YES;
         self.player.yAdd = SlowYspd;
         self.player.xAdd = SlowXspd;
@@ -1018,12 +1025,18 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
 
         CGPoint newLocation = CGPointMake(self.player.position.x, self.player.position.y);
 
-        if (_waterLevel) {
+        if (_waterLevel && !WhaleyScene3DModeEnabled) {
             _ceilingFactor = 0.5;
             self.player.yAdd = SlowYspd;
         }
 
-        if (self.player.airMode == JUMPING_UP) {
+        if (WhaleyScene3DModeEnabled) {
+            WhaleyArenaLayout a = Whaley3DLayout(self);
+            CGFloat dy = self.player.airMode == JUMPING_UP ? self.player.yAdd : -self.player.yAdd;
+            if (a.valid) {
+                newLocation.y = MAX(a.bottom, MIN(a.top - self.player.scaledHeight, newLocation.y + dy));
+            }
+        } else if (self.player.airMode == JUMPING_UP) {
             if ([self ableToMoveUp:self.player.yAdd]) {
                 newLocation.y += self.player.yAdd;
             }
@@ -1084,7 +1097,7 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
         if ((self.player.airMode != JUMPING_UP)
             && (([self isAtGround:self.player.position])
                 || (!([self ableToMoveDown:self.player.yAdd])))) {
-            if ([Helpers isYposExactlyOnTile:self.player.position withTileMap:self.tileMap]) {
+            if (WhaleyScene3DModeEnabled || [Helpers isYposExactlyOnTile:self.player.position withTileMap:self.tileMap]) {
                 self.player.airMode = GROUNDED;
                 self.player.xAdd = NormXspd;
                 self.player.desiredPos = ccp(playerCenter.x, self.player.desiredPos.y);
@@ -1107,7 +1120,7 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
     if (/*!(self.player.isMovingLaterally)
              &&*/
         (!(self.player.isDead))
-        && (self.player.airMode != JUMPING_UP)) {
+        && (WhaleyScene3DModeEnabled || self.player.airMode != JUMPING_UP)) {
         CGRect playerRect = [Helpers spriteRectangle:self.player];
 
         NSMutableArray *tempFrozenProjectiles = [NSMutableArray new];
@@ -1118,6 +1131,8 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
         }
 
         for (Projectile *projectile in tempFrozenProjectiles) {
+            // A fixed foundation cannot relaunch Whaley every frame during ascent.
+            if (Whaley3DIsFoundation(projectile) && self.player.airMode == JUMPING_UP) continue;
             CGRect projectileRect = [Helpers spriteRectangle:projectile];
 
             CGPoint playerCenter = [Helpers spriteCenter:self.player];
@@ -1135,6 +1150,10 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
                          && */
                     (ABS(diffx) <= (self.player.scaledWidth / CloseBubbleDivisor))
                     && (ABS(diffy) <= (self.player.scaledHeight / CloseBubbleDivisor))) {
+                    if (WhaleyHostProjectileIsFixed(projectile)) {
+                        WhaleyObserveProjectileContact(self, projectile, NO);
+                        continue;
+                    }
                     [self removeProjectile:projectile];
                 } else {
                     BOOL wasJump = NO;
@@ -1149,6 +1168,11 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
                         self.player.yAdd = FastYspd;
 
                         wasJump = YES;
+                        if (WhaleyScene3DModeEnabled) {
+                            WhaleyScene3DJumpSequence++;
+                            WhaleyScene3DJumpAnchorBottom =
+                                CGPointMake(playerCenter.x, self.player.position.y);
+                        }
 
                         if (ABS(diffx) >= (projectile.scaledWidth / 4)) {
                             self.player.isMovingLaterally = YES;
@@ -1180,10 +1204,15 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
                         }
                         self.player.desiredPos = ccp(playerDesiredX, self.player.position.y);
                     }
-                    if ((!(_hasInfiniteBubbles))
-                        && (((!(projectile.isBeingMoved))
-                             /*&& ((projectile.position.y + ((projectile.scaledHeight) / 2)) <= self.player.position.y)*/)
-                            || (wasJump))) {
+                    BOOL consumeBounce = WhaleyScene3DModeEnabled
+                        ? WhaleyArenaConsumesBubble(Whaley3DIsFoundation(projectile), wasJump)
+                        : ((!projectile.isBeingMoved) || wasJump);
+                    if (!WhaleyHostProjectileIsFixed(projectile) &&
+                        (WhaleyScene3DModeEnabled || !(_hasInfiniteBubbles)) &&
+                        consumeBounce) {
+                        if (WhaleyScene3DModeEnabled) {
+                            projectile.bouncesLeft = 1;
+                        }
                         projectile.bouncesLeft = projectile.bouncesLeft - 1;
                         switch (projectile.bouncesLeft) {
                             case 2:
@@ -1194,6 +1223,10 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
                                 break;
                         }
                     }
+                    WhaleyObserveProjectileContact(self, projectile, wasJump);
+#if defined(WHALEY_SPRITEKIT_COMPAT)
+                    [_expressionPresentation contactBubble:projectile player:self.player jumped:wasJump];
+#endif
                 }
             }
         }
@@ -1250,6 +1283,10 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
                 self.level.totalCollectibles++;
                 [self.level.collectiblesCaptured addObject:[NSNumber numberWithInt:collectible.tag]];
                 self.level.checkpointIndex = collectible.tag;
+                WhaleyObserveCoin(self, collectible);
+#if defined(WHALEY_SPRITEKIT_COMPAT)
+                [_expressionPresentation collectCoin];
+#endif
                 [GameState saveGameStateToFile];
                 [self removeCollectible:collectible];
                 [self.hud updateScore];
@@ -1262,7 +1299,7 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
         }
 
         CGRect goalRect = [Helpers spriteRectangle:self.goal];
-        if ([Helpers rectIntersectsCircle:playerRect
+        if (!WhaleyScene3DModeEnabled && [Helpers rectIntersectsCircle:playerRect
                                 forCircle:goalRect
                          withRadiusOffset:-1
                       withRectWidthOffset:-1
@@ -1270,7 +1307,11 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
             self.spout.position = ccp(self.player.position.x,
                                       self.player.position.y + self.player.scaledHeight - 1);
             self.spoutSpriteSheet.visible = YES;
+#if defined(WHALEY_SPRITEKIT_COMPAT)
+            [self startSpoutAnimation];
+#endif
             self.player.hasWon = YES;
+            WhaleyObserveGoal(self);
             [self unschedule:@selector(gameLoop:)];
             [self unschedule:@selector(switchPhase:)];
             self.isTouchEnabled = NO;
@@ -1301,6 +1342,9 @@ const NSInteger MIDDLE_BOUNCE_RANGE = 6;
 }
 
 - (void)dealloc {
+#if defined(WHALEY_SPRITEKIT_COMPAT)
+    [_expressionPresentation release];
+#endif
     [[CCSpriteFrameCache sharedSpriteFrameCache] removeUnusedSpriteFrames];
     [self.goalSound stop];
     [self.collectibleSound stop];

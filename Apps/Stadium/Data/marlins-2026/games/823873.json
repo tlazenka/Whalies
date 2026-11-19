@@ -1,0 +1,22 @@
+{
+  "gamePk": 823873,
+  "date": "2026-05-05",
+  "away": "Baltimore Orioles",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 2},
+  "boxscore": {
+    "away": {"E": "Basallo (1, throw).", "PB": null},
+    "home": {"E": "Stowers (1, fielding); Bender (1, pickoff).", "PB": null}
+  },
+  "allPlaysCount": 84,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "top", "chargedTo": "home", "fielder": "Kyle Stowers", "position": "LF",
+     "kind": "fielding", "batter": "Pete Alonso", "consequence": "Alonso doubled and took third on the error; Ward and Beavers scored on the play", "runScored": true},
+    {"inning": 5, "half": "top", "chargedTo": "home", "fielder": "Anthony Bender", "position": "P",
+     "kind": "pickoff", "batter": null, "consequence": "Bender's pickoff throw to first went for an error; the fetch did not say where the runner ended up, and the play ended in an out", "runScored": false, "source": "playEvents"},
+    {"inning": 8, "half": "bottom", "chargedTo": "away", "fielder": "Samuel Basallo", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "on a double steal, the catcher's throw went for an error; Esteury Ruiz stole third and Owen Caissie stole second", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

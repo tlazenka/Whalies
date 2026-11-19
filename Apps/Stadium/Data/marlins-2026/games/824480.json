@@ -1,0 +1,20 @@
+{
+  "gamePk": 824480,
+  "date": "2026-08-15",
+  "away": "Miami Marlins",
+  "home": "Cincinnati Reds",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Ruiz, E (3, fielding).", "PB": null},
+    "home": {"E": "Marte, N (1, fielding).", "PB": null}
+  },
+  "allPlaysCount": 83,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Esteury Ruiz", "position": "RF",
+     "kind": "fielding", "batter": "Ke'Bryan Hayes", "consequence": "Hayes reached on Ruiz's fielding error", "runScored": false},
+    {"inning": 5, "half": "top", "chargedTo": "home", "fielder": "Noelvi Marte", "position": "RF",
+     "kind": "fielding", "batter": "Jakob Marsee", "consequence": "Marsee singled to right and took second on Marte's fielding error", "runScored": false}
+  ],
+  "notes": ""
+}

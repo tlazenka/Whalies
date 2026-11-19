@@ -1,0 +1,60 @@
+{
+  "gamePk": 824294,
+  "date": "2026-04-11",
+  "away": "Miami Marlins",
+  "home": "Detroit Tigers",
+  "linescoreErrors": {
+    "away": 1,
+    "home": 1
+  },
+  "boxscore": {
+    "away": {
+      "E": "Ramírez (2, catcher interference); Norby (2, dropped foul).",
+      "PB": null
+    },
+    "home": {
+      "E": "McGonigle (2, throw).",
+      "PB": null
+    }
+  },
+  "allPlaysCount": 72,
+  "playByPlayComplete": true,
+  "plays": [
+    {
+      "inning": 6,
+      "half": "top",
+      "chargedTo": "home",
+      "fielder": "Kevin McGonigle",
+      "position": "SS",
+      "kind": "throwing",
+      "batter": "Otto Lopez",
+      "consequence": "Lopez reached base safely on the throwing error",
+      "runScored": false
+    },
+    {
+      "inning": 4,
+      "half": "bottom",
+      "chargedTo": "away",
+      "fielder": "Connor Norby",
+      "position": "1B",
+      "kind": "dropped foul",
+      "batter": null,
+      "consequence": "Norby dropped a foul pop-up; the batter stayed at the plate and the fetch did not record the final outcome of the at-bat",
+      "runScored": false,
+      "source": "playEvents"
+    },
+    {
+      "inning": 3,
+      "half": "bottom",
+      "chargedTo": "away",
+      "fielder": "Agustín Ramírez",
+      "position": "C",
+      "kind": "catcher interference",
+      "batter": "Dillon Dingler",
+      "consequence": "Dingler awarded first on catcher's interference, McGonigle to second; Riley Greene then homered to score both",
+      "runScored": false,
+      "source": "result (catcher interference)"
+    }
+  ],
+  "notes": "Box-score E line for Miami lists 2 errors (Ramírez catcher interference, Norby dropped foul) while the linescore says 1: the linescore does not count the catcher's interference, which the official fielding totals do."
+}

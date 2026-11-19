@@ -1,0 +1,22 @@
+{
+  "gamePk": 823710,
+  "date": "2026-05-13",
+  "away": "Miami Marlins",
+  "home": "Minnesota Twins",
+  "linescoreErrors": {"away": 1, "home": 2},
+  "boxscore": {
+    "away": {"E": "Meyer (1, throw).", "PB": null},
+    "home": {"E": "Keaschall (4, fielding); Topa (1, pickoff).", "PB": null}
+  },
+  "allPlaysCount": 83,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "top", "chargedTo": "home", "fielder": "Luke Keaschall", "position": "2B",
+     "kind": "fielding", "batter": "Liam Hicks", "consequence": "Hicks reached base on the fielding error; Edwards advanced to third", "runScored": false},
+    {"inning": 1, "half": "bottom", "chargedTo": "away", "fielder": "Max Meyer", "position": "P",
+     "kind": "throwing", "batter": "Josh Bell", "consequence": "Bell reached on a fielder's choice; Martin advanced to third on the throwing error", "runScored": false},
+    {"inning": 6, "half": "top", "chargedTo": "home", "fielder": "Justin Topa", "position": "P",
+     "kind": "pickoff", "batter": null, "consequence": "pickoff throw to second was an error; the fetch did not say whether the runner advanced; the at-bat ended on an in-play out", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

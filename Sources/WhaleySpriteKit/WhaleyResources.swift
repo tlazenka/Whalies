@@ -13,6 +13,12 @@ public enum WhaleyResources {
     }
 
     public static func url(_ name: String, in bundle: Bundle? = nil) -> URL? {
+        if WhaleySrcUsesWhalelandArt(),
+           ["flame01.png", "flame02.png", "spout.png",
+            "tileset.png", "tileset2.png", "tileset3.png"].contains(name),
+           let alternate = url("whaleland-" + name, in: bundle) {
+            return alternate
+        }
         let bundle = bundle ?? .module
         let path = name as NSString
         let ext = path.pathExtension.isEmpty ? nil : path.pathExtension
@@ -21,10 +27,24 @@ public enum WhaleyResources {
     }
 
     public static func texture(_ name: String, in bundle: Bundle? = nil) -> SKTexture {
-        guard let url = url(name, in: bundle), let image = UIImage(contentsOfFile: url.path) else {
-            return SKTexture(imageNamed: name)
+        let texture: SKTexture
+        if let url = url(name, in: bundle), let image = UIImage(contentsOfFile: url.path) {
+            texture = SKTexture(image: image)
+        } else {
+            texture = SKTexture(imageNamed: name)
         }
-        return SKTexture(image: image)
+        let filename = (name as NSString).lastPathComponent
+        let stylePrefix = "whaleland-"
+        let originalName = filename.hasPrefix(stylePrefix) ? String(filename.dropFirst(stylePrefix.count)) : filename
+        switch originalName {
+        case "player.png", "player-win.png", "spout.png", "flame01.png", "flame02.png",
+             "coin.png", "goal01.png", "tileset.png", "tileset2.png", "tileset3.png",
+             "whaley-expressions.png", "whaley-win-expressions.png":
+            texture.filteringMode = .nearest
+        default:
+            break
+        }
+        return texture
     }
 }
 #endif

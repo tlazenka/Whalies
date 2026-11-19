@@ -1,0 +1,18 @@
+{
+  "gamePk": 824624,
+  "date": "2026-09-22",
+  "away": "Miami Marlins",
+  "home": "Chicago Cubs",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Mack (12, missed catch).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 103,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 6, "half": "bottom", "chargedTo": "away", "fielder": "Joe Mack", "position": "C",
+     "kind": "missed catch", "batter": "Michael Busch", "consequence": "Busch reached first on a fielder's choice with the missed catch; Pete Crow-Armstrong scored from third; Seiya Suzuki went first to third", "runScored": true}
+  ],
+  "notes": ""
+}

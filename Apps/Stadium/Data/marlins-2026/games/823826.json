@@ -1,0 +1,20 @@
+{
+  "gamePk": 823826,
+  "date": "2026-08-25",
+  "away": "Boston Red Sox",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 2, "home": 0},
+  "boxscore": {
+    "away": {"E": "Guerrero (1, pickoff); Monasterio (7, throw).", "PB": "Wong (2)."},
+    "home": {"E": null, "PB": "Navarreto (1)."}
+  },
+  "allPlaysCount": 90,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 10, "half": "bottom", "chargedTo": "away", "fielder": "Andruw Monasterio", "position": "SS",
+     "kind": "throwing", "batter": "Otto Lopez", "consequence": "Lopez reached on Monasterio's throwing error", "runScored": false},
+    {"inning": 6, "half": "bottom", "chargedTo": "away", "fielder": "Tyron Guerrero", "position": "P",
+     "kind": "pickoff", "batter": null, "consequence": "pickoff throw to second was an error; the fetch did not name the runner or say where he ended up; the at-bat ended on an in-play out", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

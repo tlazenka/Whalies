@@ -1,0 +1,24 @@
+{
+  "gamePk": 822688,
+  "date": "2026-08-30",
+  "away": "Miami Marlins",
+  "home": "Washington Nationals",
+  "linescoreErrors": {"away": 2, "home": 2},
+  "boxscore": {
+    "away": {"E": "Navarreto (2, throw); Jiménez, L (5, throw).", "PB": null},
+    "home": {"E": "Vivas (7, fielding); Pinckney (1, throw).", "PB": null}
+  },
+  "allPlaysCount": 74,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 6, "half": "top", "chargedTo": "home", "fielder": "Jorbit Vivas", "position": "3B",
+     "kind": "fielding", "batter": "Agustin Ramirez", "consequence": "Ramirez reached first on the error; no runner movement described", "runScored": false},
+    {"inning": 7, "half": "bottom", "chargedTo": "away", "fielder": "Leo Jimenez", "position": "3B",
+     "kind": "throwing", "batter": "Harry Ford", "consequence": "Ford reached on a fielder's choice and advanced to second; Jorbit Vivas took third on the throwing error", "runScored": false},
+    {"inning": 9, "half": "top", "chargedTo": "home", "fielder": "Andrew Pinckney", "position": "CF",
+     "kind": "throwing", "batter": "Joe Mack", "consequence": "Mack out on a sacrifice fly; Jakob Marsee took third on the throwing error; Griffin Conine and Leo Jimenez scored", "runScored": true},
+    {"inning": 5, "half": "bottom", "chargedTo": "away", "fielder": "Brian Navarreto", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "Vivas stole second and took third on the catcher's throwing error", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

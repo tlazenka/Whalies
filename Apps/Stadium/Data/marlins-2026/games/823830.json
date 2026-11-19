@@ -1,0 +1,18 @@
+{
+  "gamePk": 823830,
+  "date": "2026-08-21",
+  "away": "Washington Nationals",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Beeter (2, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 77,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 9, "half": "bottom", "chargedTo": "away", "fielder": "Clayton Beeter", "position": "P",
+     "kind": "throwing", "batter": "Esteury Ruiz", "consequence": "Ruiz bunt-singled and reached second on Beeter's throwing error; Ramírez went from second to third", "runScored": false}
+  ],
+  "notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "gamePk": 823427,
+  "date": "2026-08-17",
+  "away": "Miami Marlins",
+  "home": "Philadelphia Phillies",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Jiménez, L (4, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 85,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 7, "half": "bottom", "chargedTo": "away", "fielder": "Leo Jiménez", "position": "1B",
+     "kind": "throwing", "batter": "Bryson Stott", "consequence": "Stott reached on a fielder's choice; Bohm moved from first to second on Jiménez's throwing error", "runScored": false}
+  ],
+  "notes": ""
+}

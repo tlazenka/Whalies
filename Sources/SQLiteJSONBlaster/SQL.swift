@@ -85,6 +85,19 @@ public struct SQL: ExpressibleByStringLiteral, ExpressibleByStringInterpolation,
 }
 
 public extension SQL {
+    /// Query IDs from Whaley's shared JSON item representation.
+    /// Uses the same expression parser and binding rules as earthquakeIDs.
+    static func whaleyIDs(matching expression: MuttniksParsers.Expression) -> SQL {
+        var interpolation = SQL.StringInterpolation(literalCapacity: 320, interpolationCount: 4)
+        interpolation.appendLiteral("""
+            SELECT json_extract(feature.value, '$.id')
+            FROM whaley_feed, json_each(document, '$.items') AS feature
+            WHERE
+            """)
+        append(expression, to: &interpolation)
+        return SQL(stringInterpolation: interpolation)
+    }
+
     static func earthquakeIDs(matching expression: MuttniksParsers.Expression) -> SQL {
         var interpolation = SQL.StringInterpolation(
             literalCapacity: 320,

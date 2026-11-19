@@ -1,0 +1,393 @@
+name: Whaley
+options:
+  bundleIdPrefix: com.muttniks
+  deploymentTarget:
+    iOS: "18.0"
+    macOS: "15.0"
+  xcodeVersion: "27.0"
+packages:
+  Muttniks:
+    path: ../
+  WhaleyCocos2D:
+    path: ../Packages/WhaleyCocos2D
+  Stadium:
+    path: Stadium
+
+targetTemplates:
+  WhaleyRuntimeConsumer:
+    settings:
+      base:
+        # Retain the canonical Objective-C/Swift callback exports in every native consumer.
+        GCC_NO_COMMON_BLOCKS: "NO"
+        OTHER_LDFLAGS: "$(inherited) -lz -Wl,-u,_WhaleyGameActionMoveTo -Wl,-u,_WhaleyGameActionScaleTo -Wl,-u,_WhaleyGameActionRotateBy -Wl,-u,_WhaleyGameActionWait -Wl,-u,_WhaleyGameActionSequence -Wl,-u,_WhaleyGameActionRepeatForever -Wl,-u,_WhaleyGameActionAnimate -Wl,-u,_WhaleyRegisterSpriteFrame -Wl,-u,_WhaleyRegisterMissingSpriteFrame -Wl,-u,_WhaleyRenderGameAction -Wl,-u,_WhaleyReleaseGameAction -Wl,-u,_WhaleyReleaseRenderedObject -Wl,-u,_WhaleyTileMapCreate -Wl,-u,_WhaleyTileMapSetLayer -Wl,-u,_WhaleyTileMapGID -Wl,-u,_WhaleyTileMapSetGID -Wl,-u,_WhaleyReleaseTileMap -Wl,-u,_WhaleyGameActionFade -Wl,-u,_WhaleyRegisterActionCallback -Wl,-u,_WhaleyGameActionCallback -Wl,-u,_WhaleySchedulerCreate -Wl,-u,_WhaleySchedulerSchedule -Wl,-u,_WhaleySchedulerCancel -Wl,-u,_WhaleySchedulerAdvance -Wl,-u,_WhaleyReleaseScheduler"
+  iOSDemo:
+    type: application
+    platform: iOS
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        TARGETED_DEVICE_FAMILY: "1,2"
+  macDemo:
+    type: application
+    platform: macOS
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+
+targets:
+  Whaley:
+    templates: [iOSDemo, WhaleyRuntimeConsumer]
+    # XcodeGen writes a real Info.plist, rather than relying on an implicit
+    # generated plist without the orientation and icon keys.
+    info:
+      path: ./Whaley/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: en
+        CFBundleName: Whaley
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        CFBundleIconName: AppIcon
+        ITSAppUsesNonExemptEncryption: false
+        UILaunchStoryboardName: LaunchScreen
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    sources:
+      - path: ./Whaley
+        excludes: [Resources, Cocos2dCompatibility, AppIcons.xcassets, Info.plist]
+      - path: ./Whaley/AppIcons.xcassets
+      - path: ./SharedLaunch/LaunchScreen.storyboard
+      # Launch storyboards resolve resources in the application bundle.
+      # Copy the existing PNG directly; no generated image or staging script.
+      - path: ../Sources/WhaleySpriteKit/Resources/Default-568h@2x.png
+        buildPhase: resources
+    dependencies:
+      - package: Muttniks
+        product: WhaleyObjectiveC
+      - package: Muttniks
+        product: WhaleySpriteKit
+      - package: Muttniks
+        product: WhaleyCore
+      - package: Muttniks
+        product: WhaleyHost
+      - package: Muttniks
+        product: JSONViewKit
+      - package: Muttniks
+        product: SQLiteJSONBlaster
+      - package: Muttniks
+        product: QueryBlaster
+      - package: Muttniks
+        product: CBLinearHierarchy
+      - package: Muttniks
+        product: SemanticCore
+      - package: Muttniks
+        product: ScopedUserDefaults
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.muttniks.whaley
+        # Override iOSDemo's generated-plist default; XcodeGen owns
+        # Apps/Whaley/Info.plist and includes all required App Store keys.
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_KEY_UILaunchScreen_Generation: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_KEY_CFBundleIconName: AppIcon
+        SUPPORTS_MACCATALYST: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Whaley
+        # Generated Info.plist takes versions from these concrete Xcode settings.
+        # Set both: MARKETING_VERSION/CURRENT_PROJECT_VERSION alone are not
+        # guaranteed to populate a previously generated empty Info.plist.
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_KEY_CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        INFOPLIST_KEY_CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        GCC_NO_COMMON_BLOCKS: "NO"
+
+  SharedExplorerTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: ../Tests/JSONViewKitTests
+    dependencies:
+      - package: Muttniks
+        product: JSONViewKit
+      - package: Muttniks
+        product: SQLiteJSONBlaster
+      - package: Muttniks
+        product: CBLinearHierarchy
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.muttniks.shared-explorer-tests
+
+  WhaleyCompatibilityTests:
+    templates: [WhaleyRuntimeConsumer]
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: ./WhaleyCompatibilityTests
+      - path: ./Whaley/WhaleyRealityProjectionRenderer.swift
+    dependencies:
+      - package: Muttniks
+        product: WhaleyObjectiveC
+      - package: Muttniks
+        product: WhaleySpriteKit
+      - package: Muttniks
+        product: WhaleyCore
+      - package: Muttniks
+        product: WhaleyHost
+      - sdk: RealityKit.framework
+      - sdk: SpriteKit.framework
+      - sdk: UIKit.framework
+      - sdk: Metal.framework
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.muttniks.whaley.compatibility-tests
+        # Private gameplay headers resolve cocos2d.h through the shared SpriteKit shim.
+        HEADER_SEARCH_PATHS: "$(inherited) $(SRCROOT)/../Sources/WhaleyObjectiveC"
+        CLANG_ENABLE_OBJC_ARC: "NO"
+        GCC_NO_COMMON_BLOCKS: "NO"
+
+  Whaley2010:
+    type: application
+    platform: iOS
+    deploymentTarget: "18.0"
+    preBuildScripts:
+      - name: Verify Whaley2010 original cocos2d engine
+        script: bash "$SRCROOT/Whaley2010/verify-engine.sh"
+        basedOnDependencyAnalysis: false
+    # XcodeGen is the source of truth. The generated plist is not committed.
+    info:
+      path: ./Whaley2010/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: en
+        CFBundleName: Whaley2010
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        ITSAppUsesNonExemptEncryption: false
+        UILaunchStoryboardName: LaunchScreen
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+              - UISceneConfigurationName: Whaley2010
+                UISceneDelegateClassName: Whaley2010SceneDelegate
+        # Keep the original portrait-only iPhone presentation, but support
+        # all four iPad orientations for multitasking and resizable scenes.
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # Compiled from Whaley2010/AppIcons.xcassets/AppIcon.appiconset.
+        CFBundleIconName: AppIcon
+    sources:
+      - path: ./Whaley2010/AppIcons.xcassets
+      - path: ./Whaley2010/Bootstrap
+      - path: ./SharedLaunch/LaunchScreen.storyboard
+      - path: ../Sources/WhaleySpriteKit/Resources/Default-568h@2x.png
+        buildPhase: resources
+      # The replacement paintings have one canonical copy for both native apps.
+      - path: ../Sources/WhaleySpriteKit/Resources/level2.png
+        buildPhase: resources
+      - path: ../Sources/WhaleySpriteKit/Resources/level2-568h.png
+        buildPhase: resources
+      - path: ../Sources/WhaleySpriteKit/Resources/level3.png
+        buildPhase: resources
+      - path: ../Sources/WhaleySpriteKit/Resources/level3-568h.png
+        buildPhase: resources
+      - path: ../Sources/WhaleySpriteKit/Resources/level5.png
+        buildPhase: resources
+      - path: ../Sources/WhaleySpriteKit/Resources/level5-568h.png
+        buildPhase: resources
+      # Only cocos2d-specific presentation and historical bootstrap sources remain.
+      # Gameplay implementations and headers are shared with Whaley.
+      - path: ./Whaley2010/Legacy
+        optional: true
+        excludes:
+          - "AppDelegate.*"
+          - "RootViewController.*"
+          - "HelloWorldLayer.*"
+          - "IntroLayer.*"
+      - path: ../Sources/WhaleyObjectiveC/src/Projectile.m
+      - path: ../Sources/WhaleyObjectiveC/src/Helpers.m
+      - path: ../Sources/WhaleyObjectiveC/src/WhaleyTrajectory.m
+      - path: ../Sources/WhaleyObjectiveC/src/WhaleyScene.m
+      - path: ../Sources/WhaleyObjectiveC/src/Score.m
+      - path: ../Sources/WhaleyObjectiveC/src/Level.m
+      - path: ../Sources/WhaleyObjectiveC/src/GameState.m
+      - path: ../Sources/WhaleyObjectiveC/src/Constants.m
+      - path: ../Sources/WhaleyObjectiveC/src/Player.m
+      - path: ../Sources/WhaleyObjectiveC/src/GameObject.m
+      - path: ../Sources/WhaleyObjectiveC/src/Hazard.m
+      - path: ../Sources/WhaleyObjectiveC/src/Collectible.m
+      - path: ./Whaley2010/Resources
+        optional: true
+        buildPhase: resources
+        excludes:
+          - Info.plist
+          - "*.txt"
+          # Both targets use the same original file above. Do not copy the
+          # historical duplicate to the same application-bundle path.
+          - "Default-568h@2x.png"
+          # Replacement paintings use the canonical resources above.
+          - "level2.png"
+          - "level2-568h.png"
+          - "level3.png"
+          - "level3-568h.png"
+          - "level5.png"
+          - "level5-568h.png"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.muttniks.whaley2010
+        INFOPLIST_KEY_UILaunchScreen_Generation: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_KEY_CFBundleDisplayName: Whaley 2010
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SUPPORTED_PLATFORMS: "iphoneos iphonesimulator"
+        SUPPORTS_MACCATALYST: NO
+        CLANG_ENABLE_OBJC_ARC: "NO"
+        # Original Constants.h has tentative string-constant definitions in
+        # several translation units; preserve the 2010 -fcommon behavior.
+        GCC_NO_COMMON_BLOCKS: "NO"
+        HEADER_SEARCH_PATHS: "$(inherited) $(SRCROOT)/../Sources/WhaleyObjectiveC/src $(SRCROOT)/Whaley2010/Legacy $(SRCROOT)/../Packages/WhaleyCocos2D/Sources/Cocos2D/cocos2d $(SRCROOT)/../Packages/WhaleyCocos2D/Sources/Cocos2D/cocos2d/Support $(SRCROOT)/../Packages/WhaleyCocos2D/Sources/Cocos2D/cocos2d/Platforms/iOS $(SRCROOT)/../Packages/WhaleyCocos2D/Sources/Cocos2D/CocosDenshion $(SRCROOT)/../Packages/WhaleyCocos2D/Sources/Cocos2D/kazmath/include $(SDKROOT)/usr/include/libxml2"
+        OTHER_LDFLAGS: "$(inherited) -lz -lxml2"
+    dependencies:
+      - package: WhaleyCocos2D
+        product: WhaleyCocos2D
+      - sdk: OpenGLES.framework
+      - sdk: OpenAL.framework
+      - sdk: AudioToolbox.framework
+      - sdk: AVFoundation.framework
+      - sdk: CoreGraphics.framework
+      - sdk: CoreText.framework
+      - sdk: QuartzCore.framework
+      - sdk: UIKit.framework
+
+
+
+
+
+  WhaleyWebKit:
+    templates: [iOSDemo]
+    deploymentTarget: "18.0"
+    # Keep this distribution separate from the native Whaley application.
+    # XcodeGen owns the generated plist, as it does for Whaley/Whaley2010.
+    info:
+      path: ./WhaleyWebKit/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: en
+        CFBundleName: WhaleyWebKit
+        CFBundleDisplayName: Whaley WebKit
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        CFBundleIconName: AppIcon
+        ITSAppUsesNonExemptEncryption: false
+        UILaunchStoryboardName: LaunchScreen
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        "UISupportedInterfaceOrientations~ipad":
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    sources:
+      - path: ./WhaleyWebKit/WhaleyWebKitApp.swift
+      - path: ./WhaleyWebKit/BundleSchemeHandler.swift
+      - path: ./WhaleyWebKit/AppIcons.xcassets
+      - path: ./SharedLaunch/LaunchScreen.storyboard
+      - path: ../Sources/WhaleySpriteKit/Resources/Default-568h@2x.png
+        buildPhase: resources
+      # Folder reference: Xcode copies the generated index and asset tree
+      # without flattening relative module, image and audio URLs.
+      - path: ./WhaleyWebBundle
+        type: folder
+        buildPhase: resources
+    preBuildScripts:
+      - name: Build and validate offline Scala.js payload
+        script: |
+          set -euo pipefail
+          "${PYTHON:-python3}" "$SRCROOT/../python/whaley.py" web package --target webkit
+        basedOnDependencyAnalysis: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.muttniks.whaleywebkit
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_KEY_UILaunchScreen_Generation: NO
+        INFOPLIST_KEY_CFBundleDisplayName: Whaley WebKit
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_KEY_CFBundleIconName: AppIcon
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_KEY_CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        INFOPLIST_KEY_CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        SUPPORTED_PLATFORMS: "iphoneos iphonesimulator"
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        SWIFT_VERSION: "5.0"
+        # sbt and the packager write generated files outside the script sandbox.
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+
+  StadiumApp:
+    productName: WhaleKart
+    templates: [iOSDemo, WhaleyRuntimeConsumer]
+    platform: auto
+    supportedDestinations: [iOS, macCatalyst]
+    deploymentTarget: "18.0"
+    sources:
+      - path: ./StadiumApp
+    dependencies:
+      - package: Stadium
+        product: StadiumKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.muttniks.stadium
+        PRODUCT_NAME: WhaleKart
+        INFOPLIST_KEY_CFBundleDisplayName: WhaleKart
+        INFOPLIST_KEY_UILaunchStoryboardName: LaunchScreen
+        INFOPLIST_KEY_UILaunchScreen_Generation: NO
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_KEY_CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        INFOPLIST_KEY_CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        SWIFT_VERSION: "5.0"
+        SUPPORTS_MACCATALYST: YES
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        "CODE_SIGN_IDENTITY[sdk=macosx*]": "-"
+
+schemes:
+  StadiumApp: {build: {targets: {StadiumApp: all}}, run: {config: Debug}}
+  Whaley: {build: {targets: {Whaley: all}}, run: {config: Debug}}
+  WhaleyWebKit:
+    build:
+      targets:
+        WhaleyWebKit: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+  Whaley2010: {build: {targets: {Whaley2010: all}}, run: {config: Debug}}
+  WhaleyCompatibilityTests:
+    build:
+      targets:
+        WhaleyCompatibilityTests: [test]
+        SharedExplorerTests: [test]
+    test:
+      config: Debug
+      targets:
+        - WhaleyCompatibilityTests
+        - SharedExplorerTests

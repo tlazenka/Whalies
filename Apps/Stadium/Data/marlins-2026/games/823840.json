@@ -1,0 +1,18 @@
+{
+  "gamePk": 823840,
+  "date": "2026-07-26",
+  "away": "San Diego Padres",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Campusano (3, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 75,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 2, "half": "bottom", "chargedTo": "away", "fielder": "Luis Campusano", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "Liam Hicks stole third and scored on the catcher's throwing error; Griffin Conine took second", "runScored": true, "source": "playEvents"}
+  ],
+  "notes": ""
+}

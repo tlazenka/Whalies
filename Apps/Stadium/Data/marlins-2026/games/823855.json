@@ -1,0 +1,18 @@
+{
+  "gamePk": 823855,
+  "date": "2026-06-11",
+  "away": "Arizona Diamondbacks",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Stowers (3, missed catch).", "PB": null}
+  },
+  "allPlaysCount": 64,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 7, "half": "top", "chargedTo": "home", "fielder": "Kyle Stowers", "position": "1B",
+     "kind": "missed catch", "batter": "Aramis Garcia", "consequence": "on a pickoff throw to first, Stowers failed to hold the throw; the fetch did not say whether the runner advanced", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

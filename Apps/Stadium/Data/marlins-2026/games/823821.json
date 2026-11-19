@@ -1,0 +1,20 @@
+{
+  "gamePk": 823821,
+  "date": "2026-09-08",
+  "away": "New York Mets",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 2, "home": 0},
+  "boxscore": {
+    "away": {"E": "Baty (9, fielding); Ewing (3, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 77,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 6, "half": "bottom", "chargedTo": "away", "fielder": "Brett Baty", "position": "3B",
+     "kind": "fielding", "batter": "Jakob Marsee", "consequence": "Marsee singled on a pop-up and reached second on the fielding error", "runScored": false},
+    {"inning": 6, "half": "bottom", "chargedTo": "away", "fielder": "A.J. Ewing", "position": "CF",
+     "kind": "throwing", "batter": "Javier Sanoja", "consequence": "Sanoja singled on a grounder and took third on the throwing error; Otto Lopez scored", "runScored": true}
+  ],
+  "notes": ""
+}

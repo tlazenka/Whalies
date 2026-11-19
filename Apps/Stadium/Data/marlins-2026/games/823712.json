@@ -1,0 +1,18 @@
+{
+  "gamePk": 823712,
+  "date": "2026-05-12",
+  "away": "Miami Marlins",
+  "home": "Minnesota Twins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Mack (1, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 64,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "bottom", "chargedTo": "away", "fielder": "Joe Mack", "position": "C",
+     "kind": "throwing", "batter": "Trevor Larnach", "consequence": "Larnach struck out swinging on a wild pitch, reached base and advanced to second on the catcher's throwing error", "runScored": false}
+  ],
+  "notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "gamePk": 823814,
+  "date": "2026-09-27",
+  "away": "Atlanta Braves",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 70,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 9, "half": "top", "chargedTo": "home", "fielder": "Graham Pauley", "position": "3B",
+     "kind": "throwing", "batter": "Sean Murphy", "consequence": "Murphy reached first safely on the throwing error; no other runner movement described", "runScored": false}
+  ],
+  "notes": "Linescore charges Miami with 1 error but the box-score fetch (run twice, same result) found no FIELDING item in either team's info list, so no E line could be recorded; the play-by-play surfaced one Miami error (Pauley, throwing, top 9), which matches the linescore count."
+}

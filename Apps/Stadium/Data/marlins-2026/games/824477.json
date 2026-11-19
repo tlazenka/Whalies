@@ -1,0 +1,22 @@
+{
+  "gamePk": 824477,
+  "date": "2026-08-16",
+  "away": "Miami Marlins",
+  "home": "Cincinnati Reds",
+  "linescoreErrors": {"away": 0, "home": 3},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "De La Cruz, E 2 (14, throw, fielding); Toglia (1, fielding).", "PB": null}
+  },
+  "allPlaysCount": 78,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 8, "half": "top", "chargedTo": "home", "fielder": "Elly De La Cruz", "position": "SS",
+     "kind": "throwing", "batter": "Agustín Ramírez", "consequence": "Ramírez reached on De La Cruz's throwing error with nobody on", "runScored": false},
+    {"inning": 9, "half": "top", "chargedTo": "home", "fielder": "Michael Toglia", "position": "1B",
+     "kind": "fielding", "batter": "Graham Pauley", "consequence": "Pauley reached on Toglia's fielding error with nobody on", "runScored": false},
+    {"inning": 9, "half": "top", "chargedTo": "home", "fielder": "Elly De La Cruz", "position": "SS",
+     "kind": "fielding", "batter": "Esteury Ruiz", "consequence": "Ruiz reached on De La Cruz's fielding error; Pauley moved from first to second", "runScored": false}
+  ],
+  "notes": ""
+}

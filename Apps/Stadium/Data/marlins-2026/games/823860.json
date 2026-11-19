@@ -1,0 +1,37 @@
+{
+  "gamePk": 823860,
+  "date": "2026-06-05",
+  "away": "Tampa Bay Rays",
+  "home": "Miami Marlins",
+  "linescoreErrors": {
+    "away": 0,
+    "home": 0
+  },
+  "boxscore": {
+    "away": {
+      "E": null,
+      "PB": null
+    },
+    "home": {
+      "E": "Mack (4, catcher interference).",
+      "PB": "Mack (3)."
+    }
+  },
+  "allPlaysCount": 74,
+  "playByPlayComplete": true,
+  "plays": [
+    {
+      "inning": 7,
+      "half": "top",
+      "chargedTo": "home",
+      "fielder": "Joe Mack",
+      "position": "C",
+      "kind": "catcher interference",
+      "batter": "Cedric Mullins",
+      "consequence": "Mullins awarded first on catcher's interference; Díaz moved to third and Vilade to second",
+      "runScored": false,
+      "source": "result (catcher interference)"
+    }
+  ],
+  "notes": "Found through Mack's fielding game log: the linescore shows no Marlins error because catcher's interference is not counted there, while the box score and the official fielding totals count it (Mack's 4th)."
+}

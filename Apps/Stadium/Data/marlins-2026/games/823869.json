@@ -1,0 +1,20 @@
+{
+  "gamePk": 823869,
+  "date": "2026-05-09",
+  "away": "Washington Nationals",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 2, "home": 0},
+  "boxscore": {
+    "away": {"E": "Littell (1, fielding); Abrams (7, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 79,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 5, "half": "bottom", "chargedTo": "away", "fielder": "Zack Littell", "position": "P",
+     "kind": "fielding", "batter": "Xavier Edwards", "consequence": "Edwards reached base on the fielding error", "runScored": false},
+    {"inning": 6, "half": "bottom", "chargedTo": "away", "fielder": "CJ Abrams", "position": "SS",
+     "kind": "throwing", "batter": "Connor Norby", "consequence": "Norby reached base on the throwing error", "runScored": false}
+  ],
+  "notes": ""
+}

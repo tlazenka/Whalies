@@ -1,0 +1,18 @@
+{
+  "gamePk": 823893,
+  "date": "2026-03-27",
+  "away": "Colorado Rockies",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Sanoja (1, fielding).", "PB": null}
+  },
+  "allPlaysCount": 69,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 4, "half": "top", "chargedTo": "home", "fielder": "Javier Sanoja", "position": "3B",
+     "kind": "fielding", "batter": "Ezequiel Tovar", "consequence": "Tovar reached first on the error; Willi Castro advanced from first to second", "runScored": false}
+  ],
+  "notes": ""
+}

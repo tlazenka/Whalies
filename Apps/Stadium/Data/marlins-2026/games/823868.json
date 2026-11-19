@@ -1,0 +1,18 @@
+{
+  "gamePk": 823868,
+  "date": "2026-05-10",
+  "away": "Washington Nationals",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Nuñez, N (4, fielding).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 70,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Nasim Nuñez", "position": "SS",
+     "kind": "fielding", "batter": "Otto Lopez", "consequence": "Lopez reached on a fielder's choice with the error; Edwards scored from third, Hicks moved to third", "runScored": true}
+  ],
+  "notes": ""
+}

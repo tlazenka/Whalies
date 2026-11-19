@@ -1,0 +1,20 @@
+{
+  "gamePk": 823881,
+  "date": "2026-04-19",
+  "away": "Milwaukee Brewers",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Hamilton, D (1, fielding).", "PB": null},
+    "home": {"E": "Hicks, L (2, throw).", "PB": null}
+  },
+  "allPlaysCount": 72,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "bottom", "chargedTo": "away", "fielder": "David Hamilton", "position": "SS",
+     "kind": "fielding", "batter": "Otto Lopez", "consequence": "Lopez reached on a fielder's choice with a fielding error; Jakob Marsee went to third and Xavier Edwards to second", "runScored": false},
+    {"inning": 6, "half": "top", "chargedTo": "home", "fielder": "Liam Hicks", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "David Hamilton stole second and went on to third on the catcher's throwing error", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

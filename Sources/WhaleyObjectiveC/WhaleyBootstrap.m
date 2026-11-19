@@ -14,7 +14,18 @@ NSBundle *WhaleySrcResourceBundle(void) {
         return WhaleyConfiguredResourceBundle ?: NSBundle.mainBundle;
     }
 }
+BOOL WhaleySrcUsesWhalelandArt(void) {
+    NSString *style = NSProcessInfo.processInfo.environment[@"WHALEY_ART_STYLE"] ?: @"whaleland";
+    return [style isEqualToString:@"whaleland"];
+}
 NSURL *WhaleySrcResourceURL(NSString *filename) {
+    if (WhaleySrcUsesWhalelandArt() &&
+        [@[@"flame01.png", @"flame02.png", @"spout.png",
+           @"tileset.png", @"tileset2.png", @"tileset3.png"]
+            containsObject:filename]) {
+        NSURL *alternate = WhaleySrcResourceURL([@"whaleland-" stringByAppendingString:filename]);
+        if (alternate) return alternate;
+    }
     NSString *base = filename.stringByDeletingPathExtension;
     NSString *ext = filename.pathExtension;
     NSBundle *bundle = WhaleySrcResourceBundle();
@@ -27,7 +38,16 @@ NSURL *WhaleySrcResourceURL(NSString *filename) {
 SKTexture *WhaleySrcTexture(NSString *filename) {
     NSURL *url = WhaleySrcResourceURL(filename);
     UIImage *image = url ? [UIImage imageWithContentsOfFile:url.path] : nil;
-    return image ? [SKTexture textureWithImage:image] : [SKTexture textureWithImageNamed:filename];
+    SKTexture *texture = image ? [SKTexture textureWithImage:image] : [SKTexture textureWithImageNamed:filename];
+    NSString *name = filename.lastPathComponent;
+    NSString *stylePrefix = @"whaleland-";
+    if ([name hasPrefix:stylePrefix]) name = [name substringFromIndex:stylePrefix.length];
+    if ([@[@"player.png", @"player-win.png", @"spout.png", @"flame01.png", @"flame02.png",
+           @"coin.png", @"goal01.png", @"tileset.png", @"tileset2.png", @"tileset3.png",
+           @"whaley-expressions.png", @"whaley-win-expressions.png"] containsObject:name]) {
+        texture.filteringMode = SKTextureFilteringNearest;
+    }
+    return texture;
 }
 
 #import "cocos2d.h"
@@ -35,10 +55,42 @@ SKTexture *WhaleySrcTexture(NSString *filename) {
 #import "src/GameState.h"
 #import "src/Helpers.h"
 #import "src/Level.h"
+#import "src/MainMenu.h"
 #import "src/WhaleyScene.h"
+#import "src/WhaleySnapshotCapture.h"
+#import "src/Whaley3DShot.h"
+#import "src/Whaley3DBubbleSelection.h"
+#include <limits.h>
+#import "include/WhaleyArenaRules.h"
+#import "src/WhaleyHud.h"
+#import "src/WhaleyHostHooks.h"
+#import "src/SimpleAudioEngine.h"
+#import "WhaleySceneLifecycle.h"
+#import <objc/runtime.h>
 
 static Whaley *WhaleyCurrentGame = nil;
+static MainMenu *WhaleyCurrentMenu = nil;
+static SKScene *WhaleyCurrentHost = nil;
+static BOOL WhaleyEmbeddedHost = NO;
+static NSMutableDictionary<NSString *, Projectile *> *WhaleyExternalProjectiles;
+static NSMutableSet<NSString *> *WhaleyConsumedExternalProjectiles;
+static NSMutableArray<NSMutableDictionary<NSString *, id> *> *WhaleyObservedEvents;
+static char WhaleyExternalProjectileKey;
 static NSArray<NSNumber *> *WhaleySuppressedFlameIndices = nil;
+static NSString *const WhaleyTileDebugOverlaysKey = @"whaley.debug.tileOverlaysEnabled";
+// Retain only while an editing interaction owns the pause. The scene itself
+// remains the authority for its current pause state.
+static Whaley *WhaleyScrubPauseOwner = nil;
+static BOOL WhaleyWasPausedBeforeScrub = NO;
+// A stable ID, not an unretained pointer into the scene's projectile array.
+static NSString *Whaley3DHeldIdentity = nil;
+// Press-start baseline; the projectile remains the only owner of its live size.
+static CGFloat Whaley3DHeldInitialScale = 0;
+static void Whaley3DClearHeldBubble(void) {
+    [Whaley3DHeldIdentity release];
+    Whaley3DHeldIdentity = nil;
+    Whaley3DHeldInitialScale = 0;
+}
 
 void WhaleySrcSetSuppressedFlames(NSArray<NSNumber *> *indices) {
     WhaleySuppressedFlameIndices = [indices copy];
@@ -64,31 +116,221 @@ NSArray<NSValue *> *WhaleySrcFlamePositions(void) {
     return positions;
 }
 
+// Bind identity to the original gameplay object, not its tile position,
+// array index, or pointer address. IDs cannot be reused when objects are freed
+// or when a level is replayed; no extra gameplay ownership is introduced.
+static char WhaleySnapshotIdentityKey;
+static NSUInteger WhaleyNextSnapshotIdentity = 1;
+
+static NSString *WhaleySnapshotIdentity(GameObject *object) {
+    NSNumber *identifier = objc_getAssociatedObject(object, &WhaleySnapshotIdentityKey);
+    if (!identifier) {
+        identifier = @(WhaleyNextSnapshotIdentity++);
+        objc_setAssociatedObject(object, &WhaleySnapshotIdentityKey,
+                                 identifier, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    return identifier.stringValue;
+}
+
+static char WhaleySnapshotSessionKey;
+static NSString *WhaleySnapshotSessionIdentity(Whaley *game) {
+    NSString *identifier = objc_getAssociatedObject(game, &WhaleySnapshotSessionKey);
+    if (!identifier) {
+        identifier = NSUUID.UUID.UUIDString;
+        objc_setAssociatedObject(game, &WhaleySnapshotSessionKey,
+                                 identifier, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    }
+    return identifier;
+}
+
+BOOL WhaleyHostOwnsProjectile(Projectile *projectile) {
+    return objc_getAssociatedObject(projectile, &WhaleyExternalProjectileKey) != nil;
+}
+
+BOOL WhaleyHostProjectileIsFixed(Projectile *projectile) {
+    NSDictionary *metadata = objc_getAssociatedObject(projectile, &WhaleyExternalProjectileKey);
+    return [metadata[@"fixed"] boolValue];
+}
+
+static NSMutableDictionary *WhaleyObservedEvent(Whaley *game, NSString *kind, GameObject *object) {
+    if (game != WhaleyCurrentGame) return nil;
+    if (!WhaleyObservedEvents) WhaleyObservedEvents = [NSMutableArray new];
+    CGPoint point = object ? object.position : game.player.position;
+    NSMutableDictionary *event = [@{
+        @"kind": kind, @"level": @(game.level.num),
+        @"session": WhaleySnapshotSessionIdentity(game),
+        @"time": @(WhaleySrcGameTime()), @"x": @(point.x), @"y": @(point.y),
+        @"playerX": @(game.player.position.x), @"playerY": @(game.player.position.y)
+    } mutableCopy];
+    if (object) event[@"objectID"] = WhaleySnapshotIdentity(object);
+    [WhaleyObservedEvents addObject:event];
+    [event release];
+    return event;
+}
+
+void WhaleyObserveProjectileContact(Whaley *game, Projectile *projectile, BOOL bounced) {
+    NSMutableDictionary *event = WhaleyObservedEvent(game, @"bubbleContact", projectile);
+    if (!event) return;
+    NSDictionary *metadata = objc_getAssociatedObject(projectile, &WhaleyExternalProjectileKey);
+    event[@"bounced"] = @(bounced);
+    event[@"remainingUses"] = @(MAX(0, projectile.bouncesLeft));
+    event[@"popped"] = @NO;
+    if (metadata) event[@"externalID"] = metadata[@"id"];
+}
+
+void WhaleyObserveProjectileRemoval(Whaley *game, Projectile *projectile) {
+    if (game != WhaleyCurrentGame) return;
+    NSDictionary *metadata = objc_getAssociatedObject(projectile, &WhaleyExternalProjectileKey);
+    if (!metadata) return;
+    NSString *identifier = metadata[@"id"];
+    if (!WhaleyConsumedExternalProjectiles) WhaleyConsumedExternalProjectiles = [NSMutableSet new];
+    [WhaleyConsumedExternalProjectiles addObject:identifier];
+    // Contact and exhaustion in one engine tick form one delivered outcome.
+    NSMutableDictionary *event = nil;
+    for (NSMutableDictionary *candidate in WhaleyObservedEvents.reverseObjectEnumerator) {
+        if ([candidate[@"kind"] isEqual:@"bubbleContact"] &&
+            [candidate[@"externalID"] isEqual:identifier] &&
+            [candidate[@"session"] isEqual:WhaleySnapshotSessionIdentity(game)] &&
+            [candidate[@"time"] doubleValue] == WhaleySrcGameTime()) {
+            event = candidate;
+            break;
+        }
+    }
+    if (!event) {
+        WhaleyObserveProjectileContact(game, projectile, NO);
+        event = WhaleyObservedEvents.lastObject;
+    }
+    event[@"popped"] = @YES;
+    event[@"remainingUses"] = @0;
+    [WhaleyExternalProjectiles removeObjectForKey:identifier];
+}
+
+void WhaleyObserveCoin(Whaley *game, Collectible *coin) {
+    WhaleyObservedEvent(game, @"coinCollected", coin);
+}
+void WhaleyObserveDeath(Whaley *game) { WhaleyObservedEvent(game, @"died", nil); }
+void WhaleyObserveGoal(Whaley *game) { WhaleyObservedEvent(game, @"levelCompleted", game.goal); }
+
+NSArray<NSDictionary<NSString *, id> *> *WhaleySrcDrainGameEvents(void) {
+    NSCAssert([NSThread isMainThread], @"Game observation requires the main thread");
+    NSArray *result = [[WhaleyObservedEvents copy] autorelease] ?: @[];
+    [WhaleyObservedEvents removeAllObjects];
+    return result;
+}
+
+NSDictionary<NSString *, id> *WhaleySrcHostState(void) {
+    NSCAssert([NSThread isMainThread], @"Game observation requires the main thread");
+    Whaley *game = WhaleyCurrentGame;
+    if (!game) return @{};
+    return @{@"session": WhaleySnapshotSessionIdentity(game),
+        @"level": @(game.level.num), @"gameTime": @(WhaleySrcGameTime()),
+        @"layerX": @(game.position.x), @"layerY": @(game.position.y),
+        @"playerX": @(game.player.position.x), @"playerY": @(game.player.position.y),
+        @"playerWidth": @(game.player.scaledWidth), @"playerHeight": @(game.player.scaledHeight),
+        @"dead": @(game.player.isDead), @"completed": @(game.player.hasWon)};
+}
+
+void WhaleySrcSetExternalProjectiles(NSArray<NSDictionary<NSString *, id> *> *inputs) {
+    NSCAssert([NSThread isMainThread], @"External projectiles require the main thread");
+    Whaley *game = WhaleyCurrentGame;
+    if (!WhaleyEmbeddedHost || !game || game.player.hasWon) return;
+    if (!WhaleyExternalProjectiles) WhaleyExternalProjectiles = [NSMutableDictionary new];
+    NSMutableSet *present = [NSMutableSet set];
+    for (NSDictionary *input in inputs) {
+        NSString *identifier = input[@"id"];
+        if (![identifier isKindOfClass:NSString.class] || identifier.length == 0) continue;
+        BOOL numeric = YES;
+        for (NSString *key in @[@"x", @"y", @"diameter", @"remainingUses"]) {
+            if (![input[key] isKindOfClass:NSNumber.class]) { numeric = NO; break; }
+        }
+        if (!numeric) continue;
+        double x = [input[@"x"] doubleValue], y = [input[@"y"] doubleValue];
+        double diameter = [input[@"diameter"] doubleValue];
+        NSInteger uses = [input[@"remainingUses"] integerValue];
+        BOOL fixed = [input[@"fixed"] boolValue];
+        if (!isfinite(x) || !isfinite(y) || !isfinite(diameter) || diameter <= 0 || uses < 0) continue;
+        [present addObject:identifier];
+        if (!fixed && uses == 0) {
+            // Consumption by the containing world withdraws the proxy without
+            // fabricating another native collision or reward.
+            Projectile *old = WhaleyExternalProjectiles[identifier];
+            if (old) {
+                [game.projectiles removeObjectIdenticalTo:old];
+                [old removeFromParent];
+                [WhaleyExternalProjectiles removeObjectForKey:identifier];
+            }
+            continue;
+        }
+        // A stale view update cannot resurrect a bubble consumed by the engine.
+        if ([WhaleyConsumedExternalProjectiles containsObject:identifier]) continue;
+        Projectile *projectile = WhaleyExternalProjectiles[identifier];
+        if (!projectile || [game.projectiles indexOfObjectIdenticalTo:projectile] == NSNotFound) {
+            projectile = [Projectile initDefaults];
+            if (!projectile) continue;
+            projectile.bouncesLeft = uses;
+            projectile.visible = NO;
+            [game addChild:projectile];
+            [game.projectiles addObject:projectile];
+            WhaleyExternalProjectiles[identifier] = projectile;
+        } else {
+            // The native engine owns consumption until the caller acknowledges it.
+            projectile.bouncesLeft = MIN(projectile.bouncesLeft, uses);
+        }
+        objc_setAssociatedObject(projectile, &WhaleyExternalProjectileKey,
+            @{@"id": identifier, @"fixed": @(fixed)}, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        projectile.position = [game convertPoint:CGPointMake(x, y) fromNode:WhaleyCurrentHost];
+        projectile.scaleX = diameter / MAX(projectile.contentSize.width, 1);
+        projectile.scaleY = diameter / MAX(projectile.contentSize.height, 1);
+        projectile.isFrozen = YES;
+        projectile.isBeingMoved = [input[@"held"] boolValue];
+    }
+    for (NSString *identifier in [[WhaleyExternalProjectiles.allKeys copy] autorelease]) {
+        if (![present containsObject:identifier]) {
+            Projectile *projectile = WhaleyExternalProjectiles[identifier];
+            [game.projectiles removeObjectIdenticalTo:projectile];
+            [projectile removeFromParent];
+            [WhaleyExternalProjectiles removeObjectForKey:identifier];
+        }
+    }
+    [WhaleyConsumedExternalProjectiles intersectSet:present];
+}
+
 NSDictionary<NSString *, id> *WhaleySrcSceneSnapshotElements(void) {
+    NSCAssert([NSThread isMainThread], @"Snapshot capture requires the game thread");
     Whaley *game = WhaleyCurrentGame;
     if (!game || !game.tileMap || !game.meta) {
         return @{@"elements" : @[]};
     }
+    WhaleySceneApply3DEnvironment(game);
     CGSize tile = game.tileMap.tileSize;
-    NSInteger width = (NSInteger)game.tileMap.mapSize.width;
-    NSInteger height = (NSInteger)game.tileMap.mapSize.height;
-    if (tile.width <= 0 || tile.height <= 0) {
-        return @{@"elements" : @[]};
-    }
+    CGSize map = game.tileMap.mapSize;
+    if (!isfinite(map.width) || !isfinite(map.height) || map.width < 1 || map.height < 1 ||
+        map.width > INT_MAX || map.height > INT_MAX) return @{@"elements": @[]};
+    NSDictionary *playerGeometry = WhaleySnapshotGeometryDictionary(game.player, tile, YES);
+    if (!playerGeometry) return @{@"elements": @[]};
+    NSInteger width = (NSInteger)map.width, height = (NSInteger)map.height;
     CGPoint player = WhaleySrcPlayerPosition();
-    NSInteger cx = (NSInteger)floor(player.x / tile.width);
-    NSInteger cy = (NSInteger)floor(player.y / tile.height);
+    double px = player.x / tile.width, py = player.y / tile.height;
+    if (!isfinite(px) || !isfinite(py) || fabs(px) > INT_MAX / 2 || fabs(py) > INT_MAX / 2)
+        return @{@"elements": @[]};
+    NSInteger cx = (NSInteger)floor(px), cy = (NSInteger)floor(py);
     NSMutableArray *elements = [NSMutableArray array];
+    NSMutableArray *liveEntities = [NSMutableArray array];
     NSInteger minX = MAX(0, cx - 18), maxX = MIN(width - 1, cx + 18);
     NSInteger minY = MAX(0, cy - 18), maxY = MIN(height - 1, cy + 18);
     for (NSInteger y = minY; y <= maxY; ++y) {
         for (NSInteger x = minX; x <= maxX; ++x) {
             NSInteger gid = [game.meta tileGIDAt:CGPointMake(x, height - 1 - y)];
-            if (!gid) {
+            if (!gid && !WhaleyScene3DModeEnabled) {
                 continue;
             }
-            NSDictionary *properties = [game.tileMap propertiesForGID:gid];
+            NSDictionary *properties = gid ? [game.tileMap propertiesForGID:gid] : nil;
             NSString *kind = [properties[@"IsWall"] isEqualToString:@"True"] ? @"wall" : ([properties[@"IsGround"] isEqualToString:@"True"] ? @"ground" : nil);
+            if (WhaleyScene3DModeEnabled) {
+                // Match the continuous collision perimeter, including authored gaps.
+                kind = WhaleyArenaIsPerimeter(x, y, width, height)
+                    ? (y == 0 ? @"ground" : @"wall") : nil;
+            }
             if (kind) {
                 [elements addObject:@{@"kind" : kind,
                                       @"x" : @(x),
@@ -101,23 +343,30 @@ NSDictionary<NSString *, id> *WhaleySrcSceneSnapshotElements(void) {
             if (!object.visible || !object.parent) {
                 continue;
             }
-            CGPoint point = object.position;
-            NSInteger x = (NSInteger)floor(point.x / tile.width);
-            NSInteger y = (NSInteger)floor(point.y / tile.height);
+            NSDictionary *entity = WhaleySnapshotLiveEntity(object, kind,
+                WhaleySnapshotIdentity(object), tile, WhaleyScene3DModeEnabled);
+            if (!entity) continue;
+            // Circular objects already store their center. Adding half the size
+            // would move the displayed bubble whenever it grows.
+            double ex = [entity[@"x"] doubleValue], ey = [entity[@"y"] doubleValue];
+            if (fabs(ex) > INT_MAX / 2 || fabs(ey) > INT_MAX / 2) continue;
+            NSInteger x = (NSInteger)floor(ex), y = (NSInteger)floor(ey);
             if (labs(x - cx) <= 18 && labs(y - cy) <= 18) {
-                [elements addObject:@{@"kind" : kind,
-                                      @"x" : @(x),
-                                      @"y" : @(y)}];
+                [elements addObject:@{@"kind": kind, @"x": @(x), @"y": @(y)}];
+                [liveEntities addObject:entity];
             }
         }
     };
     addObjects(game.projectiles, @"bubble");
     addObjects(game.collectibles, @"coin");
     addObjects(game.hazards, @"flame");
-    if (game.goal) {
+    if (game.goal && !WhaleyScene3DModeEnabled) {
         addObjects(@[ game.goal ], @"goal");
     }
     return @{@"elements" : elements,
+             @"liveEntities" : liveEntities,
+             @"playerGeometry" : playerGeometry,
+             @"session" : WhaleySnapshotSessionIdentity(game),
              @"tileWidth" : @(tile.width),
              @"tileHeight" : @(tile.height)};
 }
@@ -213,19 +462,7 @@ static void WhaleyInstallMechanicsStatus(SKScene *host, CCScene *srcScene) {
                                         }
                                         if (won && !previousWon) {
                                             [CCCompatTrace record:@"mechanic.goal" detail:@"player.hasWon = YES"];
-                                            SKShapeNode *panel = [SKShapeNode shapeNodeWithRect:CGRectMake(32, 244, 256, 80) cornerRadius:12];
-                                            panel.name = @"WhaleyWinConfirmation";
-                                            panel.fillColor = [UIColor colorWithWhite:0 alpha:0.78];
-                                            panel.strokeColor = UIColor.whiteColor;
-                                            panel.zPosition = 31000;
-                                            SKLabelNode *label = [SKLabelNode labelNodeWithFontNamed:@"Menlo-Bold"];
-                                            label.text = @"LEVEL COMPLETE";
-                                            label.fontSize = 20;
-                                            label.position = CGPointMake(128, 31);
-                                            label.verticalAlignmentMode = SKLabelVerticalAlignmentModeCenter;
-                                            label.horizontalAlignmentMode = SKLabelHorizontalAlignmentModeCenter;
-                                            [panel addChild:label];
-                                            [host addChild:panel];
+
                                         }
                                         previousDead = dead;
                                         previousWon = won;
@@ -235,8 +472,23 @@ static void WhaleyInstallMechanicsStatus(SKScene *host, CCScene *srcScene) {
 #endif
 }
 
-static void WhaleyInstallCollisionOverlay(SKScene *host, CCScene *srcScene) {
-#if DEBUG
+BOOL WhaleySrcTileDebugOverlaysEnabled(void) {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:WhaleyTileDebugOverlaysKey];
+}
+
+static void WhaleyRemoveCollisionOverlay(SKScene *host) {
+    for (NSString *name in @[@"//WhaleyCollisionOverlay", @"//WhaleyGeometry", @"//WhaleyCollisionLegend"]) {
+        SKNode *node = [host childNodeWithName:name];
+        // Stop the geometry refresh, including its captured game, before
+        // removing the node. Hidden overlays must do no rendering work.
+        [node removeAllActions];
+        [node removeFromParent];
+    }
+}
+
+static void WhaleyInstallCollisionOverlay(SKScene *host, SKNode *srcScene) {
+    WhaleyRemoveCollisionOverlay(host);
+    if (!WhaleySrcTileDebugOverlaysEnabled()) return;
     Whaley *game = WhaleyFindGameLayer(srcScene);
     if (!game || !game.tileMap || !game.meta) {
         [CCCompatTrace record:@"DebugOverlay.install" detail:@"missing Whaley/tileMap/meta"];
@@ -289,7 +541,13 @@ static void WhaleyInstallCollisionOverlay(SKScene *host, CCScene *srcScene) {
     geometry.zPosition = 20002;
     [game addChild:geometry];
     [geometry runAction:[SKAction repeatActionForever:[SKAction sequence:@[
-                                      [SKAction runBlock:^{
+                                      // SpriteKit supplies the action's node. Do
+                                      // not capture the node or game in its own
+                                      // repeating action (a retain cycle).
+                                      [SKAction customActionWithDuration:1.0 / 30.0 actionBlock:^(SKNode *geometry, CGFloat elapsedTime) {
+                                          (void)elapsedTime;
+                                          Whaley *game = [geometry.parent isKindOfClass:[Whaley class]]
+                                              ? (Whaley *)geometry.parent : nil;
                                           [geometry removeAllChildren];
                                           if (game.player) {
                                               [geometry addChild:WhaleyDebugRect([Helpers spriteRectangle:game.player], UIColor.systemCyanColor)];
@@ -329,18 +587,111 @@ static void WhaleyInstallCollisionOverlay(SKScene *host, CCScene *srcScene) {
                    detail:[NSString stringWithFormat:@"Meta occupied=%lu walls=%lu ground=%lu other=%lu",
                                                      (unsigned long)occupied, (unsigned long)walls,
                                                      (unsigned long)grounds, (unsigned long)other]];
-#endif
+}
+
+void WhaleySrcSetTileDebugOverlaysEnabled(BOOL enabled) {
+    [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:WhaleyTileDebugOverlaysKey];
+    if (WhaleyCurrentHost) {
+        WhaleyInstallCollisionOverlay(WhaleyCurrentHost, WhaleyCurrentHost);
+    }
+}
+
+static void WhaleyFinishSceneInteractions(void) {
+    WhaleySrcAccessibleBubbleEnd();
+    WhaleySrcSceneScrubEnd();
+    if (WhaleyHasLivePlayerBeforeTimeProjection) WhaleySrcRestoreLiveProjection();
+    WhaleySrcSetSceneScrubPaused(NO);
+}
+
+// Recreate the historical CCTransitionTurnOffTiles without replacing the
+// authoritative game scene. Each tile independently vanishes to reveal play.
+static void WhaleyRevealLevelTiles(SKScene *host) {
+    const CGFloat step = 32;
+    NSInteger columns = (NSInteger)ceil(host.size.width / step);
+    NSInteger rows = (NSInteger)ceil(host.size.height / step);
+    for (NSInteger row = 0; row < rows; ++row) {
+        for (NSInteger col = 0; col < columns; ++col) {
+            SKShapeNode *tile = [SKShapeNode shapeNodeWithRect:
+                CGRectMake(col * step, row * step, step + 0.5, step + 0.5)];
+            tile.fillColor = UIColor.blackColor;
+            tile.strokeColor = UIColor.clearColor;
+            tile.lineWidth = 0;
+            tile.zPosition = 60000;
+            [host addChild:tile];
+            NSTimeInterval delay = ((row * 7 + col * 13) % 43) * 0.012;
+            [tile runAction:[SKAction sequence:@[
+                [SKAction waitForDuration:delay],
+                // Each tile is either fully present or fully removed.
+                [SKAction removeFromParent]
+            ]]];
+        }
+    }
 }
 
 static void WhaleyInstallSrcSceneInHost(SKScene *host, Level *level) {
+    WhaleyFinishSceneInteractions();
+    WhaleyRemoveCollisionOverlay(host);
+    Whaley3DClearHeldBubble();
+    WhaleyStopSceneSchedules(host);
+    [WhaleyExternalProjectiles removeAllObjects];
     CCScene *srcScene = [Whaley scene:level withGameMode:level.gameMode];
     WhaleyCurrentGame = WhaleyFindGameLayer(srcScene);
     WhaleySrcSetSuppressedFlames(WhaleySuppressedFlameIndices);
     WhaleyHasLivePlayerBeforeTimeProjection = NO;
     [host removeAllChildren];
     [host addChild:srcScene];
+    WhaleyCurrentHost = host;
+    WhaleyCurrentMenu = nil;
+    [[[CCDirector sharedDirector] touchDispatcher] addTargetedDelegate:WhaleyCurrentGame priority:0 swallowsTouches:YES];
     WhaleyInstallCollisionOverlay(host, srcScene);
     WhaleyInstallMechanicsStatus(host, srcScene);
+    WhaleyRevealLevelTiles(host);
+}
+
+static void WhaleyInstallMenuInHost(SKScene *host) {
+    WhaleyFinishSceneInteractions();
+    WhaleyRemoveCollisionOverlay(host);
+    Whaley3DClearHeldBubble();
+    WhaleyCurrentGame = nil;
+    WhaleyHasLivePlayerBeforeTimeProjection = NO;
+    WhaleySrcTrajectoryReset();
+    [host removeAllChildren];
+    MainMenu *menu = [MainMenu initWithLevelsAchieved];
+    WhaleyCurrentMenu = menu;
+    WhaleyCurrentHost = host;
+    [host addChild:menu];
+    [[[CCDirector sharedDirector] touchDispatcher] addTargetedDelegate:menu priority:0 swallowsTouches:YES];
+}
+
+SKScene *WhaleyCreateSrcMainMenuScene(void) {
+    [[SimpleAudioEngine sharedEngine] beginSoundEffectsSessionEnabled:YES];
+    WhaleyEmbeddedHost = NO;
+    [WhaleyExternalProjectiles removeAllObjects];
+    [WhaleyConsumedExternalProjectiles removeAllObjects];
+    [WhaleyObservedEvents removeAllObjects];
+    CGSize logicalSize = CGSizeMake(320, 568);
+    [[CCDirector sharedDirector] setCompatWinSize:logicalSize];
+    SKScene *host = [SKScene sceneWithSize:logicalSize];
+    host.scaleMode = SKSceneScaleModeAspectFit;
+    host.anchorPoint = CGPointZero;
+    host.backgroundColor = UIColor.blackColor;
+    WhaleyInstallMenuInHost(host);
+    return host;
+}
+
+BOOL WhaleySrcIsMainMenuVisible(void) { return WhaleyCurrentMenu != nil; }
+
+void WhaleySrcShowMainMenu(void) {
+    if (!WhaleyCurrentHost) return;
+    if (WhaleyCurrentGame && WhaleyCurrentGame.level) {
+        Level *level = WhaleyCurrentGame.level;
+        [level.collectiblesCaptured removeAllObjects];
+        level.checkpointIndex = -1;
+        level.totalTime = 0;
+        level.bubblesUsed = 0;
+        [GameState saveGameStateToFile];
+    }
+    WhaleyInstallMenuInHost(WhaleyCurrentHost);
 }
 
 static Level *WhaleyPersistentLevel(NSInteger number) {
@@ -357,6 +708,16 @@ static void WhaleyResetLevelForFreshRun(Level *level) {
     level.bubblesUsed = 0;
     level.totalTime = 0;
     level.totalCollectibles = 0;
+}
+
+void WhaleySrcStartLevel(NSInteger levelNumber, NSInteger mode) {
+    if (!WhaleyCurrentHost || levelNumber < 1 || levelNumber > NumLevels) return;
+    if (levelNumber > [GameState gameState].levelsAchieved) return;
+    Level *level = WhaleyPersistentLevel(levelNumber);
+    WhaleyResetLevelForFreshRun(level);
+    level.gameMode = mode;
+    [GameState saveGameStateToFile];
+    WhaleyInstallSrcSceneInHost(WhaleyCurrentHost, level);
 }
 
 void WhaleySrcReplayCurrentLevel(void) {
@@ -388,36 +749,121 @@ void WhaleySrcAdvanceAfterWin(void) {
     } else {
         state.levelsAchieved = MAX(state.levelsAchieved, next);
     }
+    if (completed >= NumLevels && !WhaleyEmbeddedHost) {
+        [GameState saveGameStateToFile];
+        WhaleyInstallMenuInHost(host);
+        return;
+    }
     Level *nextLevel = WhaleyPersistentLevel(next);
     WhaleyResetLevelForFreshRun(nextLevel);
     [GameState saveGameStateToFile];
     WhaleyInstallSrcSceneInHost(host, nextLevel);
 }
 
-SKScene *WhaleyCreateSrcLevelScene(NSInteger levelNumber) {
+static SKScene *WhaleyCreateLevelHost(NSInteger levelNumber, CGSize logicalSize, BOOL embedded, BOOL soundEffectsEnabled) {
+    NSCAssert([NSThread isMainThread], @"Game creation requires the main thread");
     NSCAssert(levelNumber >= 1 && levelNumber <= 6, @"Original Whaley level must be 1...6");
+    NSCAssert(isfinite(logicalSize.width) && isfinite(logicalSize.height) &&
+              logicalSize.width >= 32 && logicalSize.height >= 32, @"Invalid Whaley viewport");
+    // Set the policy before the original scene creates or plays any sound.
+    [[SimpleAudioEngine sharedEngine] beginSoundEffectsSessionEnabled:soundEffectsEnabled];
     [CCCompatTrace setEnabled:YES];
-
-    CGSize logicalSize = CGSizeMake(320.0, 568.0);
+    WhaleyFinishSceneInteractions();
+    Whaley3DClearHeldBubble();
+    WhaleyEmbeddedHost = embedded;
+    WhaleyScene3DModeEnabled = NO;
+    [WhaleyExternalProjectiles removeAllObjects];
+    [WhaleyConsumedExternalProjectiles removeAllObjects];
+    [WhaleyObservedEvents removeAllObjects];
     [[CCDirector sharedDirector] setCompatWinSize:logicalSize];
 
     Level *level = WhaleyPersistentLevel(levelNumber);
+    if (embedded) {
+        // A new containing-game session starts a fresh attempt. Death retries
+        // still use WhaleySrcReplayCurrentLevel and retain that attempt's coins.
+        WhaleyResetLevelForFreshRun(level);
+        level.gameMode = NormalBubble;
+    }
     CCScene *srcScene = [Whaley scene:level withGameMode:NormalBubble];
     WhaleyCurrentGame = WhaleyFindGameLayer(srcScene);
     WhaleySrcSetSuppressedFlames(WhaleySuppressedFlameIndices);
     WhaleyHasLivePlayerBeforeTimeProjection = NO;
 
     SKScene *host = [SKScene sceneWithSize:logicalSize];
-    host.scaleMode = SKSceneScaleModeAspectFill;
+    host.scaleMode = SKSceneScaleModeAspectFit;
     host.anchorPoint = CGPointZero;
     host.backgroundColor = UIColor.blackColor;
     [host addChild:srcScene];
+    WhaleyCurrentHost = host;
+    WhaleyCurrentMenu = nil;
+    [[[CCDirector sharedDirector] touchDispatcher] addTargetedDelegate:WhaleyCurrentGame priority:0 swallowsTouches:YES];
     WhaleyInstallCollisionOverlay(host, srcScene);
     WhaleyInstallMechanicsStatus(host, srcScene);
+    WhaleyRevealLevelTiles(host);
 
     [CCCompatTrace record:@"bootstrap.original"
                    detail:[NSString stringWithFormat:@"WhaleyScene.m original level %ld", (long)levelNumber]];
     return host;
+}
+
+SKScene *WhaleyCreateSrcLevelScene(NSInteger levelNumber) {
+    return WhaleyCreateLevelHost(levelNumber, CGSizeMake(320, 568), NO, YES);
+}
+
+SKScene *WhaleyCreateSrcEmbeddedLevelScene(NSInteger levelNumber, CGSize logicalSize) {
+    return WhaleyCreateSrcEmbeddedLevelSceneWithSoundEffects(levelNumber, logicalSize, YES);
+}
+
+SKScene *WhaleyCreateSrcEmbeddedLevelSceneWithSoundEffects(NSInteger levelNumber, CGSize logicalSize, BOOL soundEffectsEnabled) {
+    return WhaleyCreateLevelHost(levelNumber, logicalSize, YES, soundEffectsEnabled);
+}
+
+BOOL WhaleySrcHostSoundEffectsEnabled(SKScene *host) {
+    return host == WhaleyCurrentHost && [SimpleAudioEngine sharedEngine].soundEffectsEnabled;
+}
+
+void WhaleySrcSetHostSoundEffectsEnabled(SKScene *host, BOOL enabled) {
+    NSCAssert([NSThread isMainThread], @"Host audio changes require the main thread");
+    if (!host || host != WhaleyCurrentHost) return;
+    [SimpleAudioEngine sharedEngine].soundEffectsEnabled = enabled;
+}
+
+void WhaleySrcSetHostSuspended(SKScene *host, BOOL suspended) {
+    NSCAssert([NSThread isMainThread], @"Host suspension requires the main thread");
+    if (host != WhaleyCurrentHost) return;
+    if (suspended && !host.paused) {
+        [WhaleyCurrentGame.bgSound stop];
+        [WhaleyCurrentGame.bounceSound stop];
+        [WhaleyCurrentGame.flameSound stop];
+        [WhaleyCurrentGame.jumpSound stop];
+        [WhaleyCurrentGame.collectibleSound stop];
+        [WhaleyCurrentGame.goalSound stop];
+        [WhaleyCurrentMenu.knockSound stop];
+        [[SimpleAudioEngine sharedEngine] pauseBackgroundMusic];
+    } else if (!suspended && host.paused && WhaleyCurrentMenu) {
+        [[SimpleAudioEngine sharedEngine] resumeBackgroundMusic];
+    }
+    // Pause an ancestor, leaving the HUD's game.isPaused/game.paused state intact.
+    host.paused = suspended;
+}
+
+void WhaleySrcDisposeHost(SKScene *host) {
+    NSCAssert([NSThread isMainThread], @"Host disposal requires the main thread");
+    if (host != WhaleyCurrentHost) return;
+    WhaleyFinishSceneInteractions();
+    Whaley3DClearHeldBubble();
+    WhaleyStopSceneSchedules(host);
+    [[SimpleAudioEngine sharedEngine] endSoundEffectsSession];
+    [[SimpleAudioEngine sharedEngine] pauseBackgroundMusic];
+    [host removeAllActions];
+    [host removeAllChildren];
+    WhaleyCurrentGame = nil;
+    WhaleyCurrentMenu = nil;
+    WhaleyCurrentHost = nil;
+    WhaleyEmbeddedHost = NO;
+    [WhaleyExternalProjectiles removeAllObjects];
+    [WhaleyConsumedExternalProjectiles removeAllObjects];
+    [WhaleyObservedEvents removeAllObjects];
 }
 
 SKScene *WhaleyCreateSrcLevelOneScene(void) {
@@ -433,12 +879,17 @@ void WhaleySrcSetCompatViewSize(CGSize size) {
 }
 
 BOOL WhaleySrcTouchBegan(UITouch *touch, UIEvent *event) {
+    if (WhaleyCurrentGame.winScreen.visible) return YES;
     return [[[CCDirector sharedDirector] touchDispatcher] dispatchTouchBegan:touch withEvent:event];
 }
 void WhaleySrcTouchMoved(UITouch *touch, UIEvent *event) {
     [[[CCDirector sharedDirector] touchDispatcher] dispatchTouchMoved:touch withEvent:event];
 }
 void WhaleySrcTouchEnded(UITouch *touch, UIEvent *event) {
+    if (WhaleyCurrentGame.winScreen.visible) {
+        [WhaleyCurrentGame.winScreen advanceAfterWin];
+        return;
+    }
     [[[CCDirector sharedDirector] touchDispatcher] dispatchTouchEnded:touch withEvent:event];
 }
 void WhaleySrcTouchCancelled(UITouch *touch, UIEvent *event) {
@@ -446,7 +897,20 @@ void WhaleySrcTouchCancelled(UITouch *touch, UIEvent *event) {
 }
 
 void WhaleySrcSetSceneScrubPaused(BOOL paused) {
-    WhaleyCurrentGame.isPaused = paused;
+    Whaley *game = WhaleyCurrentGame;
+    if (paused) {
+        if (!game || WhaleyScrubPauseOwner == game) return;
+        // A previous scene must never leave a pause claim on its replacement.
+        [WhaleyScrubPauseOwner release];
+        WhaleyScrubPauseOwner = [game retain];
+        WhaleyWasPausedBeforeScrub = game.isPaused;
+        game.isPaused = YES;
+    } else {
+        Whaley *owner = WhaleyScrubPauseOwner;
+        WhaleyScrubPauseOwner = nil;
+        if (owner && owner == game) owner.isPaused = WhaleyWasPausedBeforeScrub;
+        [owner release];
+    }
 }
 
 void WhaleySrcBeginTimeProjection(void) {
@@ -461,7 +925,7 @@ void WhaleySrcBeginTimeProjection(void) {
 
 BOOL WhaleySrcProjectTime(NSTimeInterval seconds) {
     Whaley *game = WhaleyCurrentGame;
-    if (!game) {
+    if (!game || !WhaleyHasLivePlayerBeforeTimeProjection) {
         return NO;
     }
     NSInteger interval = (NSInteger)floor(MAX(0.0, seconds) / 2.0);
@@ -477,7 +941,7 @@ BOOL WhaleySrcProjectTime(NSTimeInterval seconds) {
 
 void WhaleySrcRestoreLiveProjection(void) {
     Whaley *game = WhaleyCurrentGame;
-    if (!game) {
+    if (!game || !WhaleyHasLivePlayerBeforeTimeProjection) {
         return;
     }
     if (WhaleyHasLivePlayerBeforeTimeProjection && game.player) {
@@ -503,6 +967,27 @@ typedef NS_ENUM(NSInteger, WhaleySceneScrubTargetKind) {
 
 static WhaleySceneScrubTargetKind WhaleySceneScrubKind = WhaleySceneScrubTargetNone;
 static GameObject *WhaleySceneScrubObject = nil;
+static SKNode *WhaleySceneScrubGhost = nil;
+
+static void WhaleySceneScrubShowGhost(GameObject *object) {
+    [WhaleySceneScrubGhost removeFromParent];
+    [WhaleySceneScrubGhost release];
+    WhaleySceneScrubGhost = nil;
+    if (!object || !object.parent) return;
+
+    CGRect originalFrame = [object boundingBox];
+    SKTexture *texture = object.spriteKitNode.texture;
+    if (!texture || CGRectIsEmpty(originalFrame)) return;
+    SKSpriteNode *ghost = [SKSpriteNode spriteNodeWithTexture:texture
+                                                size:originalFrame.size];
+    ghost.position = CGPointMake(CGRectGetMidX(originalFrame), CGRectGetMidY(originalFrame));
+    ghost.alpha = 0.24;
+    ghost.color = UIColor.systemTealColor;
+    ghost.colorBlendFactor = 0.25;
+    ghost.zPosition = object.zPosition + 0.5;
+    [object.parent addChild:ghost];
+    WhaleySceneScrubGhost = [ghost retain];
+}
 static CGPoint WhaleySceneScrubOriginPosition;
 static CGFloat WhaleySceneScrubOriginScaleX = 1.0;
 static CGFloat WhaleySceneScrubOriginScaleY = 1.0;
@@ -712,11 +1197,12 @@ BOOL WhaleySrcSceneScrubBeginAccessibleObject(NSUInteger index) {
     }
     WhaleySceneScrubKind = WhaleySceneScrubTargetObject;
     WhaleySceneScrubObject = object;
+    WhaleySceneScrubShowGhost(object);
     WhaleySceneScrubOriginPosition = object.position;
     WhaleySceneScrubOriginScaleX = object.scaleX;
     WhaleySceneScrubOriginScaleY = object.scaleY;
     WhaleySceneScrubImageIndex = 0;
-    WhaleyCurrentGame.isPaused = YES;
+    WhaleySrcSetSceneScrubPaused(YES);
     return YES;
 }
 
@@ -730,6 +1216,7 @@ static NSArray *WhaleyAccessibleBubbles(void) {
     }
     NSMutableArray *result = [NSMutableArray array];
     for (Projectile *bubble in game.projectiles) {
+        if (WhaleySceneIs3DFoundation(bubble)) continue;
         BOOL accessibilityOwnsBubble = (bubble == WhaleyAccessibleBubble);
         if (bubble.isFrozen && bubble.visible && bubble.parent && (!bubble.isBeingMoved || accessibilityOwnsBubble)) {
             [result addObject:bubble];
@@ -791,7 +1278,7 @@ BOOL WhaleySrcAccessibleBubbleBegin(NSUInteger index) {
     bubble.relativeOffset = CGPointZero;
     bubble.scaleX = NormalSize;
     bubble.scaleY = NormalSize;
-    game.isPaused = YES;
+    WhaleySrcSetSceneScrubPaused(YES);
     return YES;
 }
 
@@ -808,7 +1295,6 @@ BOOL WhaleySrcAccessibleBubbleMove(CGFloat deltaX, CGFloat deltaY) {
 
 void WhaleySrcAccessibleBubbleEnd(void) {
     Projectile *bubble = WhaleyAccessibleBubble;
-    Whaley *game = WhaleyCurrentGame;
     if (bubble) {
         CGFloat delta = NormalSize - SmallSize;
         bubble.position = CGPointMake(bubble.position.x + bubble.relativeOffset.x * delta,
@@ -818,9 +1304,7 @@ void WhaleySrcAccessibleBubbleEnd(void) {
         bubble.scaleY = SmallSize;
     }
     WhaleyAccessibleBubble = nil;
-    if (game) {
-        game.isPaused = NO;
-    }
+    if (bubble) WhaleySrcSetSceneScrubPaused(NO);
 }
 
 BOOL WhaleySrcSceneScrubCanAcquire(CGPoint viewPoint) {
@@ -837,11 +1321,12 @@ BOOL WhaleySrcSceneScrubBegin(CGPoint viewPoint) {
     if (object) {
         WhaleySceneScrubKind = WhaleySceneScrubTargetObject;
         WhaleySceneScrubObject = object;
+        WhaleySceneScrubShowGhost(object);
         WhaleySceneScrubOriginPosition = object.position;
         WhaleySceneScrubOriginScaleX = object.scaleX;
         WhaleySceneScrubOriginScaleY = object.scaleY;
         WhaleySceneScrubImageIndex = 0;
-        WhaleyCurrentGame.isPaused = YES;
+        WhaleySrcSetSceneScrubPaused(YES);
         return YES;
     }
     CGPoint tile;
@@ -862,13 +1347,12 @@ BOOL WhaleySrcSceneScrubBegin(CGPoint viewPoint) {
             }
             WhaleySceneScrubTileInitialRun++;
         }
-        WhaleyCurrentGame.isPaused = YES;
+        WhaleySrcSetSceneScrubPaused(YES);
         WhaleySceneScrubShowTileOverlayRun(tile, WhaleySceneScrubTileInitialRun);
         return YES;
     }
     return NO;
 }
-
 static void WhaleySceneScrubApplyImage(GameObject *object, NSInteger steps) {
     NSInteger index = MAX(0, WhaleySceneScrubImageIndex + steps);
     SKSpriteNode *presentation = object.spriteKitNode;
@@ -899,6 +1383,7 @@ static void WhaleySceneScrubApplyImage(GameObject *object, NSInteger steps) {
     SKTexture *atlas = WhaleySrcTexture(frame.atlasFile);
     CGRect normalized = CGRectMake(r.origin.x / a.width, 1.0 - (r.origin.y + r.size.height) / a.height, r.size.width / a.width, r.size.height / a.height);
     presentation.texture = [SKTexture textureWithRect:normalized inTexture:atlas];
+    presentation.texture.filteringMode = atlas.filteringMode;
 }
 
 void WhaleySrcSceneScrubApply(NSInteger category, NSInteger scalarSteps) {
@@ -951,17 +1436,30 @@ void WhaleySrcSceneScrubApply(NSInteger category, NSInteger scalarSteps) {
 }
 
 void WhaleySrcSceneScrubEnd(void) {
+    BOOL acquired = WhaleySceneScrubKind != WhaleySceneScrubTargetNone;
+    BOOL editedTiles = WhaleySceneScrubKind == WhaleySceneScrubTargetTile;
+    [WhaleySceneScrubGhost removeFromParent];
+    [WhaleySceneScrubGhost release];
+    WhaleySceneScrubGhost = nil;
     [WhaleySceneScrubTileOverlay removeFromParent];
     WhaleySceneScrubTileOverlay = nil;
     WhaleySceneScrubObject = nil;
     [WhaleySceneScrubTileRowSnapshot release];
     WhaleySceneScrubTileRowSnapshot = nil;
     WhaleySceneScrubKind = WhaleySceneScrubTargetNone;
-    WhaleyCurrentGame.isPaused = NO;
+    if (acquired) WhaleySrcSetSceneScrubPaused(NO);
+    if (editedTiles && WhaleyCurrentHost && WhaleySrcTileDebugOverlaysEnabled()) {
+        WhaleyInstallCollisionOverlay(WhaleyCurrentHost, WhaleyCurrentHost);
+    }
 }
 
 CGPoint WhaleySrcPlayerPosition(void) {
     return WhaleyCurrentGame.player ? WhaleyCurrentGame.player.position : CGPointZero;
+}
+
+CGPoint WhaleySrcPlayerCenter(void) {
+    return WhaleyCurrentGame.player ?
+        [Helpers spriteCenter:WhaleyCurrentGame.player] : CGPointZero;
 }
 
 NSInteger WhaleySrcCurrentLevelNumber(void) {
@@ -1029,7 +1527,100 @@ BOOL WhaleySrcAdventurePerformAction(WhaleyAdventureAction action) {
     if (accepted) {
         [game ccTouchEnded:(UITouch *)touch withEvent:nil];
     }
+    [touch release];
     return accepted;
+}
+
+void WhaleySrc3DSetEnabled(BOOL enabled) {
+    NSCAssert([NSThread isMainThread], @"3D gameplay requires the main thread");
+    Whaley3DClearHeldBubble();
+    WhaleyScene3DModeEnabled = enabled;
+    WhaleyScene3DPlaceAtAnchor = NO;
+    WhaleySceneApply3DEnvironment(WhaleyCurrentGame);
+}
+
+BOOL WhaleySrc3DIsAirborne(void) {
+    Whaley *game = WhaleyCurrentGame;
+    return game && !game.player.isDead && game.player.airMode != GROUNDED;
+}
+
+NSUInteger WhaleySrc3DJumpSequence(void) {
+    return WhaleyScene3DJumpSequence;
+}
+
+CGPoint WhaleySrc3DPlayerBottom(void) {
+    Whaley *game = WhaleyCurrentGame;
+    if (!game || !game.player) return CGPointZero;
+    return CGPointMake([Helpers spriteCenter:game.player].x, game.player.position.y);
+}
+
+CGPoint WhaleySrc3DJumpStartBottom(void) {
+    return WhaleyScene3DJumpSequence == 0
+        ? WhaleySrc3DPlayerBottom()
+        : WhaleyScene3DJumpAnchorBottom;
+}
+
+BOOL WhaleySrc3DBeginBubble(WhaleyAdventureAction action) {
+    NSCAssert([NSThread isMainThread], @"3D gameplay requires the main thread");
+    Whaley3DClearHeldBubble();
+    int side;
+    switch (action) {
+        case WhaleyAdventureActionShootLeft: side = -1; break;
+        case WhaleyAdventureActionShootRight: side = 1; break;
+        case WhaleyAdventureActionShootBelow: side = 0; break;
+        default: return NO;
+    }
+    Projectile *projectile = WhaleyCreate3DShot(WhaleyCurrentGame, side);
+    if (!projectile) return NO;
+    Whaley3DHeldIdentity = [WhaleySnapshotIdentity(projectile) copy];
+    Whaley3DHeldInitialScale = projectile.sizeMode;
+    return YES;
+}
+
+BOOL WhaleySrc3DBeginExistingBubble(NSString *sessionID, NSString *projectileID) {
+    NSCAssert([NSThread isMainThread], @"3D gameplay requires the main thread");
+    Whaley3DClearHeldBubble();
+    Whaley *game = WhaleyCurrentGame;
+    NSString *currentSession = game ? WhaleySnapshotSessionIdentity(game) : nil;
+    Projectile *projectile = WhaleyFind3DGrowableBubble(game, sessionID, currentSession,
+        projectileID, ^NSString *(GameObject *object) { return WhaleySnapshotIdentity(object); });
+    if (!projectile) return NO;
+    // Re-selection neither creates nor repositions a shot, resets its bounce
+    // allowance, nor charges the shot score. Growth resumes from its live size.
+    Whaley3DHeldIdentity = [projectileID copy];
+    Whaley3DHeldInitialScale = projectile.sizeMode;
+    return YES;
+}
+
+void WhaleySrc3DUpdateHeldBubble(NSTimeInterval duration) {
+    NSCAssert([NSThread isMainThread], @"3D gameplay requires the main thread");
+    Whaley *game = WhaleyCurrentGame;
+    if (!WhaleyScene3DModeEnabled || !game || !Whaley3DHeldIdentity ||
+        game.player.isDead || game.player.hasWon) {
+        Whaley3DClearHeldBubble();
+        return;
+    }
+    Projectile *projectile = nil;
+    for (Projectile *candidate in game.projectiles) {
+        if ([WhaleySnapshotIdentity(candidate) isEqualToString:Whaley3DHeldIdentity]) {
+            projectile = candidate;
+            break;
+        }
+    }
+    if (!projectile || WhaleySceneIs3DFoundation(projectile)) {
+        Whaley3DClearHeldBubble();
+        return;
+    }
+    // Resolve the live object on the game thread. A popped object is never dereferenced.
+    if (game.isPaused || !isfinite(duration) || duration <= 0.2 || !projectile.isFrozen) return;
+    CGFloat size = MIN(NormalSize * 2.4,
+                       Whaley3DHeldInitialScale + (duration - 0.2) * NormalSize * 1.5);
+    projectile.sizeMode = MAX(projectile.sizeMode, size);
+}
+
+void WhaleySrc3DEndHeldBubble(void) {
+    NSCAssert([NSThread isMainThread], @"3D gameplay requires the main thread");
+    Whaley3DClearHeldBubble();
 }
 
 BOOL WhaleySrcAdventurePlayerIsDead(void) {

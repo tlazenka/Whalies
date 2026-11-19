@@ -1,0 +1,22 @@
+{
+  "gamePk": 824885,
+  "date": "2026-08-06",
+  "away": "Miami Marlins",
+  "home": "Atlanta Braves",
+  "linescoreErrors": {"away": 3, "home": 0},
+  "boxscore": {
+    "away": {"E": "Navarreto (1, throw); Edwards, X (7, fielding); Sanoja (10, fielding).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 80,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 6, "half": "bottom", "chargedTo": "away", "fielder": "Xavier Edwards", "position": "2B",
+     "kind": "fielding", "batter": "Drake Baldwin", "consequence": "Baldwin reached on a fielder's choice with Edwards charged a fielding error; Thomas scored and Jarvis moved to second", "runScored": true},
+    {"inning": 8, "half": "bottom", "chargedTo": "away", "fielder": "Javier Sanoja", "position": "CF",
+     "kind": "fielding", "batter": "Matt Olson", "consequence": "Olson reached on Sanoja's fielding error and advanced to second", "runScored": false},
+    {"inning": 4, "half": "bottom", "chargedTo": "away", "fielder": "Brian Navarreto", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "Mauricio Dubón stole second and went on to third on the catcher's throwing error; the at-bat ended in an out", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

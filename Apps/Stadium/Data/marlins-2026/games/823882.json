@@ -1,0 +1,20 @@
+{
+  "gamePk": 823882,
+  "date": "2026-04-18",
+  "away": "Milwaukee Brewers",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Bauers (3, throw).", "PB": null},
+    "home": {"E": "Edwards, X (2, fielding).", "PB": "Hicks, L (2)."}
+  },
+  "allPlaysCount": 80,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 4, "half": "bottom", "chargedTo": "away", "fielder": "Jake Bauers", "position": "1B",
+     "kind": "throwing", "batter": "Otto Lopez", "consequence": "Lopez reached and took second on the throwing error; Liam Hicks was thrown out at third on the play", "runScored": false},
+    {"inning": 5, "half": "top", "chargedTo": "home", "fielder": "Xavier Edwards", "position": "2B",
+     "kind": "fielding", "batter": "William Contreras", "consequence": "Contreras reached on the fielding error and advanced to second", "runScored": false}
+  ],
+  "notes": ""
+}

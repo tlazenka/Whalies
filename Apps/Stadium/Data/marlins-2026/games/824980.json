@@ -1,0 +1,18 @@
+{
+  "gamePk": 824980,
+  "date": "2026-07-05",
+  "away": "Miami Marlins",
+  "home": "Athletics",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": "Mack (5)."},
+    "home": {"E": "Butler, L (2, dropped foul).", "PB": null}
+  },
+  "allPlaysCount": 86,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 2, "half": "top", "chargedTo": "home", "fielder": "Lawrence Butler", "position": "RF",
+     "kind": "dropped foul", "batter": null, "consequence": "Butler dropped a foul pop-up; the batter stayed at the plate, and no runner movement or run was recorded on the error", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

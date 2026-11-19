@@ -1,0 +1,18 @@
+{
+  "gamePk": 824337,
+  "date": "2026-07-01",
+  "away": "Miami Marlins",
+  "home": "Colorado Rockies",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Sanoja (8, fielding).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 67,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 5, "half": "bottom", "chargedTo": "away", "fielder": "Javier Sanoja", "position": "2B",
+     "kind": "fielding", "batter": "Kyle Karros", "consequence": "Karros reached first on the fielding error; Johnston advanced from first to second", "runScored": false}
+  ],
+  "notes": ""
+}

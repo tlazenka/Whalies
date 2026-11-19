@@ -1,0 +1,18 @@
+{
+  "gamePk": 823828,
+  "date": "2026-08-24",
+  "away": "Boston Red Sox",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Duran, Ja (2, fielding).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 84,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 8, "half": "bottom", "chargedTo": "away", "fielder": "Jarren Duran", "position": "LF",
+     "kind": "fielding", "batter": "Leo Jiménez", "consequence": "Jiménez singled to left and took second on Duran's fielding error with nobody on", "runScored": false}
+  ],
+  "notes": ""
+}

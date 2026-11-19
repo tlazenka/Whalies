@@ -1,0 +1,18 @@
+{
+  "gamePk": 823831,
+  "date": "2026-08-22",
+  "away": "Washington Nationals",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Lopez, O (19, throw).", "PB": null}
+  },
+  "allPlaysCount": 66,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 4, "half": "top", "chargedTo": "home", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "throwing", "batter": "José Tena", "consequence": "Tena singled; Lopez's throwing error let Ortiz score from first", "runScored": true}
+  ],
+  "notes": ""
+}

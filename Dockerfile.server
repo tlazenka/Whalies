@@ -1,0 +1,15 @@
+FROM sbtscala/scala-sbt:eclipse-temurin-21.0.12_8_1.13.0_3.3.8
+WORKDIR /workspace
+# Asset generation parses the original TMX and plist data with Python stdlib.
+RUN apt-get update && apt-get install -y --no-install-recommends python3 curl \
+    && rm -rf /var/lib/apt/lists/*
+COPY Scala/ ./Scala/
+COPY python/whaley.py python/pyproject.toml python/LICENSE ./python/
+COPY python/whaley_tools/ ./python/whaley_tools/
+# Scala's asset generator reads these original TMX/plist, PNG and audio sources.
+COPY Sources/WhaleySpriteKit/Resources/ ./Sources/WhaleySpriteKit/Resources/
+COPY Apps/Whaley2010/Resources/ ./Apps/Whaley2010/Resources/
+COPY LICENSE ./LICENSE
+WORKDIR /workspace/Scala
+EXPOSE 9000
+CMD ["sbt", "server/run"]

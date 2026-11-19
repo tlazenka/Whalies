@@ -1,0 +1,71 @@
+{
+  "gamePk": 823854,
+  "date": "2026-06-20",
+  "away": "San Francisco Giants",
+  "home": "Miami Marlins",
+  "linescoreErrors": {
+    "away": 3,
+    "home": 0
+  },
+  "boxscore": {
+    "away": {
+      "E": "Devers (5, fielding); Haase 2 (3, catcher interference, throw); McDonald (2, missed catch).",
+      "PB": null
+    },
+    "home": {
+      "E": null,
+      "PB": null
+    }
+  },
+  "allPlaysCount": 79,
+  "playByPlayComplete": true,
+  "plays": [
+    {
+      "inning": 1,
+      "half": "bottom",
+      "chargedTo": "away",
+      "fielder": "Rafael Devers",
+      "position": "1B",
+      "kind": "fielding",
+      "batter": "Otto Lopez",
+      "consequence": "Lopez reached base on the fielding error; no other runner advances listed",
+      "runScored": false
+    },
+    {
+      "inning": 2,
+      "half": "bottom",
+      "chargedTo": "away",
+      "fielder": "Trevor McDonald",
+      "position": "P",
+      "kind": "missed catch",
+      "batter": "Xavier Edwards",
+      "consequence": "Edwards reached first on the pitcher's missed catch; Mack scored, Ruiz to third, Stowers to second",
+      "runScored": true
+    },
+    {
+      "inning": 4,
+      "half": "bottom",
+      "chargedTo": "away",
+      "fielder": "Eric Haase",
+      "position": "C",
+      "kind": "throwing",
+      "batter": null,
+      "consequence": "Esteury Ruiz stole second and took third on the catcher's throwing error; the plate appearance later ended with a ball in play that scored a run",
+      "runScored": false,
+      "source": "playEvents"
+    },
+    {
+      "inning": 2,
+      "half": "bottom",
+      "chargedTo": "away",
+      "fielder": "Eric Haase",
+      "position": "C",
+      "kind": "catcher interference",
+      "batter": "Esteury Ruiz",
+      "consequence": "Ruiz awarded first on catcher's interference; Mack, who had singled, moved up to second",
+      "runScored": false,
+      "source": "result (catcher interference)"
+    }
+  ],
+  "notes": "Box-score E line for San Francisco totals 4 errors (Devers, Haase 2, McDonald) while the linescore says 3: the linescore does not count the catcher's interference, which the official fielding totals do."
+}

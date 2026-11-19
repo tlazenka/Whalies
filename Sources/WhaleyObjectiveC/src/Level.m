@@ -47,10 +47,10 @@ static NSMutableDictionary *_names = nil;
     if (!(_names)) {
         _names = [NSMutableDictionary new];
         [_names setObject:@"DRYDOCK AT LIVERPOOL" forKey:@"1"];
-        [_names setObject:@"LIFE LINE" forKey:@"2"];
-        [_names setObject:@"HMS CALCUTTA" forKey:@"3"];
+        [_names setObject:@"THE CREATION" forKey:@"2"];
+        [_names setObject:@"IN THE OMNIBUS" forKey:@"3"];
         [_names setObject:@"LAS MENINAS" forKey:@"4"];
-        [_names setObject:@"LA BELLE DAME" forKey:@"5"];
+        [_names setObject:@"THE SCAPEGOAT" forKey:@"5"];
         [_names setObject:@"PEARL EARRING" forKey:@"6"];
     }
     return [_names objectForKey:[[NSNumber numberWithInt:self.num] stringValue]];

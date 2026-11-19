@@ -1,0 +1,18 @@
+{
+  "gamePk": 823568,
+  "date": "2026-04-03",
+  "away": "Miami Marlins",
+  "home": "New York Yankees",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Pauley (1, fielding).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 72,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 6, "half": "bottom", "chargedTo": "away", "fielder": "Graham Pauley", "position": "3B",
+     "kind": "fielding", "batter": "José Caballero", "consequence": "Caballero reached on the fielding error; Austin Wells moved from first to second", "runScored": false}
+  ],
+  "notes": ""
+}

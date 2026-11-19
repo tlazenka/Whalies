@@ -1,0 +1,20 @@
+{
+  "gamePk": 822983,
+  "date": "2026-05-15",
+  "away": "Miami Marlins",
+  "home": "Tampa Bay Rays",
+  "linescoreErrors": {"away": 0, "home": 2},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Feduccia (2, throw); Caminero (9, throw).", "PB": null}
+  },
+  "allPlaysCount": 71,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 5, "half": "top", "chargedTo": "home", "fielder": "Junior Caminero", "position": "3B",
+     "kind": "throwing", "batter": "Otto Lopez", "consequence": "Lopez reached safely on the throwing error; Edwards advanced from first to second", "runScored": false},
+    {"inning": 2, "half": "top", "chargedTo": "home", "fielder": "Hunter Feduccia", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "Jakob Marsee stole second and took third on the catcher's throwing error", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

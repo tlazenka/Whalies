@@ -1,0 +1,37 @@
+{
+  "gamePk": 824297,
+  "date": "2026-04-10",
+  "away": "Miami Marlins",
+  "home": "Detroit Tigers",
+  "linescoreErrors": {
+    "away": 0,
+    "home": 0
+  },
+  "boxscore": {
+    "away": {
+      "E": "Hicks, L (1, catcher interference).",
+      "PB": null
+    },
+    "home": {
+      "E": null,
+      "PB": null
+    }
+  },
+  "allPlaysCount": 63,
+  "playByPlayComplete": true,
+  "plays": [
+    {
+      "inning": 8,
+      "half": "bottom",
+      "chargedTo": "away",
+      "fielder": "Liam Hicks",
+      "position": "C",
+      "kind": "catcher interference",
+      "batter": "Dillon Dingler",
+      "consequence": "Dingler awarded first on catcher's interference; Greene moved from first to second",
+      "runScored": false,
+      "source": "result (catcher interference)"
+    }
+  ],
+  "notes": "Found through Hicks's fielding game log: the linescore shows no Marlins error because catcher's interference is not counted there, while the box score and the official fielding totals count it (Hicks's 1st)."
+}

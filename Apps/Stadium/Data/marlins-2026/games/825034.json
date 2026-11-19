@@ -1,0 +1,20 @@
+{
+  "gamePk": 825034,
+  "date": "2026-09-14",
+  "away": "Miami Marlins",
+  "home": "Arizona Diamondbacks",
+  "linescoreErrors": {"away": 2, "home": 0},
+  "boxscore": {
+    "away": {"E": "Lopez, O (20, throw); Alcantara, S (1, pickoff).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 82,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Sandy Alcantara", "position": "P",
+     "kind": "pickoff", "batter": null, "consequence": "Alcantara's pickoff throw to first went for a throwing error; the fetch did not say whether the runner advanced, and the at-bat ended in an out", "runScored": false, "source": "playEvents"},
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "throwing", "batter": null, "consequence": "Jordan Lawlar stole second and went on to third on the shortstop's throwing error; Pavin Smith stole home on the play", "runScored": true, "source": "playEvents"}
+  ],
+  "notes": ""
+}

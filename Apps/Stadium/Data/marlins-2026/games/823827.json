@@ -1,0 +1,18 @@
+{
+  "gamePk": 823827,
+  "date": "2026-08-23",
+  "away": "Washington Nationals",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Fairbanks (1, throw).", "PB": null}
+  },
+  "allPlaysCount": 75,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 9, "half": "top", "chargedTo": "home", "fielder": "Pete Fairbanks", "position": "P",
+     "kind": "throwing", "batter": "Nasim Nuñez", "consequence": "Nuñez reached on a fielder's choice; Chaparro advanced to second on Fairbanks's throwing error", "runScored": false}
+  ],
+  "notes": ""
+}

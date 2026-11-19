@@ -1,0 +1,20 @@
+{
+  "gamePk": 822811,
+  "date": "2026-05-26",
+  "away": "Miami Marlins",
+  "home": "Toronto Blue Jays",
+  "linescoreErrors": {"away": 0, "home": 2},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Okamoto (4, throw); Valenzuela (6, throw).", "PB": null}
+  },
+  "allPlaysCount": 74,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "top", "chargedTo": "home", "fielder": "Kazuma Okamoto", "position": "3B",
+     "kind": "throwing", "batter": "Otto Lopez", "consequence": "Lopez singled on a grounder to third and advanced to second on the throwing error", "runScored": false},
+    {"inning": 5, "half": "top", "chargedTo": "home", "fielder": "Brandon Valenzuela", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "Jakob Marsee stole second and took third on the catcher's throwing error; the at-bat later ended with a ball in play that scored a run", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

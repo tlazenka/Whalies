@@ -1,0 +1,20 @@
+{
+  "gamePk": 822689,
+  "date": "2026-08-31",
+  "away": "Miami Marlins",
+  "home": "Washington Nationals",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Ruiz, E (4, throw).", "PB": null},
+    "home": {"E": "House (9, fielding).", "PB": null}
+  },
+  "allPlaysCount": 74,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 5, "half": "top", "chargedTo": "home", "fielder": "Brady House", "position": "3B",
+     "kind": "fielding", "batter": "Heriberto Hernandez", "consequence": "Hernandez reached first on the error", "runScored": false},
+    {"inning": 7, "half": "bottom", "chargedTo": "away", "fielder": "Esteury Ruiz", "position": "RF",
+     "kind": "throwing", "batter": "Andres Chaparro", "consequence": "Chaparro singled to right and took second on the throwing error; Abimelec Ortiz scored", "runScored": true}
+  ],
+  "notes": ""
+}

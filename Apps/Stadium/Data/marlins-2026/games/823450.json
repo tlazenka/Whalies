@@ -1,0 +1,24 @@
+{
+  "gamePk": 823450,
+  "date": "2026-06-17",
+  "away": "Miami Marlins",
+  "home": "Philadelphia Phillies",
+  "linescoreErrors": {"away": 2, "home": 2},
+  "boxscore": {
+    "away": {"E": "Lopez, O (11, missed catch); Stowers (4, missed catch).", "PB": null},
+    "home": {"E": "Bohm (5, throw); Turner (7, fielding).", "PB": null}
+  },
+  "allPlaysCount": 85,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 2, "half": "bottom", "chargedTo": "away", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "missed catch", "batter": "Garrett Stubbs", "consequence": "Force call overturned on challenge; Stubbs reached on a fielder's choice and Crawford took second on the missed catch", "runScored": false},
+    {"inning": 2, "half": "bottom", "chargedTo": "away", "fielder": "Kyle Stowers", "position": "1B",
+     "kind": "missed catch", "batter": "Brandon Marsh", "consequence": "Marsh lined out to third; on the missed catch at first Stubbs scored, Turner went to third, Harper to second", "runScored": true},
+    {"inning": 5, "half": "top", "chargedTo": "home", "fielder": "Alec Bohm", "position": "3B",
+     "kind": "throwing", "batter": "Javier Sanoja", "consequence": "Sanoja reached base on the throwing error", "runScored": false},
+    {"inning": 6, "half": "top", "chargedTo": "home", "fielder": "Trea Turner", "position": "SS",
+     "kind": "fielding", "batter": "Jakob Marsee", "consequence": "Marsee reached base on the fielding error; later scored on a Mack home run", "runScored": false}
+  ],
+  "notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "gamePk": 823816,
+  "date": "2026-09-25",
+  "away": "Atlanta Braves",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Sanoja (14, fielding).", "PB": null}
+  },
+  "allPlaysCount": 63,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "top", "chargedTo": "home", "fielder": "Javier Sanoja", "position": "3B",
+     "kind": "fielding", "batter": "Ronald Acuna Jr.", "consequence": "Acuna reached safely on the fielding error; no other runners mentioned", "runScored": false}
+  ],
+  "notes": ""
+}

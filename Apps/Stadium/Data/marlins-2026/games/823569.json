@@ -1,0 +1,20 @@
+{
+  "gamePk": 823569,
+  "date": "2026-04-04",
+  "away": "Miami Marlins",
+  "home": "New York Yankees",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Lopez, O (3, fielding).", "PB": "Ramírez 2 (2)."},
+    "home": {"E": "Bellinger (1, throw).", "PB": null}
+  },
+  "allPlaysCount": 88,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "fielding", "batter": "Ryan McMahon", "consequence": "McMahon reached first on the fielding error with nobody on base", "runScored": false},
+    {"inning": 4, "half": "top", "chargedTo": "home", "fielder": "Cody Bellinger", "position": "LF",
+     "kind": "throwing", "batter": "Jakob Marsee", "consequence": "Marsee singled to left and went to third on the throwing error; Agustín Ramírez scored from first", "runScored": true}
+  ],
+  "notes": ""
+}

@@ -91,9 +91,14 @@
 }
 
 - (void)configureDataSource {
+    __weak typeof(self) weakController = self;
     UICollectionViewCellRegistration *registration =
         [UICollectionViewCellRegistration registrationWithCellClass:CBAdjustableListCell.class
                                                configurationHandler:^(UICollectionViewListCell *cell, NSIndexPath *indexPath, NSString *identifier) {
+                                                   __strong typeof(weakController) self = weakController;
+                                                   if (!self) {
+                                                       return;
+                                                   }
                                                    id<CBHierarchyNode> node = self.nodesByID[identifier];
                                                    NSInteger depth = [self.depthByID[identifier] integerValue];
                                                    UIListContentConfiguration *content = [UIListContentConfiguration subtitleCellConfiguration];
@@ -153,6 +158,10 @@
             registrationWithSupplementaryClass:UICollectionViewListCell.class
                                    elementKind:UICollectionElementKindSectionHeader
                           configurationHandler:^(UICollectionViewListCell *header, NSString *kind, NSIndexPath *indexPath) {
+                              __strong typeof(weakController) self = weakController;
+                              if (!self) {
+                                  return;
+                              }
                               NSString *sectionID = self.sectionIDs[indexPath.section];
                               UIListContentConfiguration *content = [UIListContentConfiguration groupedHeaderConfiguration];
                               content.text = self.titlesBySection[sectionID] ?: sectionID;
@@ -240,6 +249,16 @@
         [snapshot appendItemsWithIdentifiers:self.itemsBySection[sectionID] ?: @[]
                    intoSectionWithIdentifier:sectionID];
     }
+    // Marker and accessibility metadata can change without changing a row's identifier. Reconfigure retained
+    // rows in place so their content stays current while the collection and its scrub gesture stay intact.
+    NSSet<NSString *> *previousIdentifiers = [NSSet setWithArray:self.dataSource.snapshot.itemIdentifiers];
+    NSMutableArray<NSString *> *retainedIdentifiers = [NSMutableArray array];
+    for (NSString *identifier in snapshot.itemIdentifiers) {
+        if ([previousIdentifiers containsObject:identifier]) {
+            [retainedIdentifiers addObject:identifier];
+        }
+    }
+    [snapshot reconfigureItemsWithIdentifiers:retainedIdentifiers];
     [self.dataSource applySnapshot:snapshot animatingDifferences:animated];
 }
 

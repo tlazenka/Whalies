@@ -1,106 +1,96 @@
-# Muttniks
+# 🇪🇪 Gray Whale 🇪🇪
 
-_a few things yoked together by violence_
+## iOS/Mac
 
-## 🦨 Muttniks: a direct manipulation faceted JSON explorer built on SQLite 🇮🇹
+| Scheme | App | Destinations | | |
+| --- | --- | --- |  --- |  --- |
+| `Whaley` | SpriteKit Gray Whale | iOS Simulator, iPhone/iPad, Mac Catalyst | <img width="1206" height="2622" alt="whale2" src="https://github.com/user-attachments/assets/b738f89e-cb83-41fc-9834-e21a7d2d0055" /> | <img width="1206" height="2622" alt="whale1" src="https://github.com/user-attachments/assets/2deae17c-f220-492b-8758-adae6b08a0ac" /> |
+| `StadiumApp` | RealityKit WhaleKart | iPhone/iPad/Mac Catalyst | <img width="1206" height="2622" alt="kart2" src="https://github.com/user-attachments/assets/58aa1eaf-8e4e-4067-ae73-899e699b9395" /> | <img width="1206" height="2622" alt="kart1" src="https://github.com/user-attachments/assets/3c2c64ab-7e3e-4297-a449-7e2b30ea788f" /> |
+| `WhaleyCLI` | whaley/whaley-relay | Mac | <img width="664" height="295" alt="cli1" src="https://github.com/user-attachments/assets/26df06bf-91b4-45a9-9d96-84bd1c38294a" /> |
+| `Whaley2010` | cocos2d Gray Whale ca. 2010 | iPhone/iPad/Mac Catalyst | | |
+| `WhaleyWebKit` | Scala.js/Canvas game bundled for `WKWebView` | iPhone/iPad/Mac Catalyst | | |
 
-First, install [Docker](https://www.docker.com/get-started). Then, build the project with:
+Minimum Xcode 27 and Swift 6.4. Compatible with [XcodeGen](https://github.com/yonaskolb/xcodegen). A typical flow:
 
-`docker compose build -v`
-
-Next, start up the containers with...
-
-Oh! I'm terribly sorry, these instructions run the _other_ [project hosted here](#muttniks-forever-an-open-source-dapp-to-show-you-how-we-built-astro-ledger). Unless you'd like a spare `sbt` image hanging around, you can reclaim the 1-2 GB we've accidentally downloaded by running:
-
-`docker compose down --volumes --rmi all --remove-orphans`
-
-_Then_, the choice is yours, sort of:
-
-### (macOS >= 26) && (Xcode >= 27)
-
-`cd Demos && brew install mint && mint run xcodegen && open MuttniksDemos.xcodeproj`
-
-### Linux || macOS
-
-`docker compose run --rm earthquakes-cli "$.properties.mag >= 5"`
-
-There actually is a server component, here, too.
-
-```
-docker compose up feed-server -d && \
-  until code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/health); [ "$code" = "200" ]; do echo "Waiting for Swift server... status: $code"; sleep 3; done && \
-  open -a Safari http://localhost:8080
+```sh
+brew install xcodegen && mint install yonaskolb/xcodegen
+cd Apps && xcodegen generate && open Apps/Whaley.xcodeproj
 ```
 
-This allows you to sign in on the iPhone app.
+### WhaleyWebKit
 
-### Screenshots
+Install JDK 17+ e.g. through (SDKMan)[https://sdkman.io}:
 
-| Scrub | Filter | Scrubap |
-| --- | --- | --- |
-| <img width="1206" height="2622" alt="Puzzola-1" src="https://github.com/user-attachments/assets/144f00a7-0f53-4c18-87e4-104b2cce862e" /> | <img width="1206" height="2622" alt="Puzzola-2" src="https://github.com/user-attachments/assets/4584aabb-0b60-4f52-9eb7-f757b2e8cb59" /> | <img width="1206" height="2622" alt="Puzzola-3" src="https://github.com/user-attachments/assets/b936a281-f299-483e-96ec-4abc3efd0400" /> |
-
-_Note: this is not Linux_
-
-## Muttniks Forever: an open source dapp to show you how we built Astro Ledger 
-
-[The original Muttniks](https://hackernoon.com/muttniks-an-open-source-dapp-to-show-you-how-we-built-astro-ledger-8a063b788d0b) has been upgraded in another direction, from Scala/Play! 2 to 3, and from single-page application to server-side rendered (yes, that is an upgrade, although interestingly Muttniks [initially had SSR support](https://github.com/tlazenka/muttniks/tree/v0.1/app/views) too via Twirl). An upgrade from another perspective came from removing Clojure in favor of a Scala monolith.
-
-Launch the WIP through:
-
-```
-docker compose up app -d && \
-  until code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:9000/health); [ "$code" = "200" ]; do echo "Waiting for Play\!... status: $code"; sleep 3; done && \
-  open -a Safari http://localhost:9000
+```sh
+sdk install java 17.0.21.0+9-tem
 ```
 
-This waits until an OK response from the Play health endpoint and then opens home through Safari. Please note you'll need a browser with wallet support beyond this.
+and Python 3.10+ if not installed, then run scheme WhaleyWebKit
 
-[Blast to the past](https://hackernoon.com/muttniks-an-open-source-dapp-to-show-you-how-we-built-astro-ledger-8a063b788d0b)
+## Browser
 
-## Muttniks & Robin/StateBlaster: ???
+With JDK 17+ and Python 3.10+
 
-I'm simply going to post the `swift`/`gradle` commands here, because there's a good chance we're just going to try to get generative AI to traipse through the code anyway to try to summarize what's going on here, and then merge in the output. In the meantime:
-
-### Swift/macOS/iOS
-
-`swift test`
-
-`swift format . --recursive --in-place`
-
-(Code formatting. Serious stuff, thus #2 on the list)
-
-~`open ./DemoApps/OnboardingStick/OnboardingStick.xcodeproj/`~
-
-~`open ./DemoApps/OnboardingSwiftUI/OnboardingSwiftUI.xcodeproj/`~
-
-(I need to add `xcodegen` support for these)
-
-### Kotlin/Ktor/Android
-
-`rm -rf ~/.m2/repository/com/stateblaster/`
-`ls -al ~/.m2/repository/com/stateblaster`
-
-(Just to make sure we're publishing locally below)
-
+```sh
+python3 python/whaley.py web package --target pages
+python3 -m http.server 8000 --bind 127.0.0.1 --directory Scala/target/pages
 ```
-./gradlew \
-  :witness-annotations:publishToMavenLocal \
-  :witness-runtime:publishToMavenLocal \
-  :witness-processor:publishToMavenLocal
+
+and navigate in your browser to http://localhost:800
+
+With Docker and Docker Compose installed, run:
+
+```sh
+docker compose up --build db server
 ```
-  
-`ls -al ~/.m2/repository/com/stateblaster`
-  
+
+and browse to localhost:9000
+
+## Desktop/Native
+
+### macOS
+
+Install Homebrew dependencies (omit openjdk@17 if already installed):
+
+```sh
+brew install openjdk@17 python llvm sdl2-compat sdl2_mixer glew pkgconf
 ```
-cd examples/ktor-server && \
-  gradle clean run --no-daemon \
-      --refresh-dependencies
+
+then:
+
+```sh
+export JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"
+export PATH="$(brew --prefix llvm)/bin:$JAVA_HOME/bin:$PATH"
+export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
+export WHALEY_NATIVE_LIB="$(brew --prefix)/lib"
+python3 python/whaley.py sbt -- nativeApp/runNative
 ```
-  
+
+### Linux
+
+For Ubuntu:
+
+```sh
+sudo apt-get update
+sudo apt-get install -y openjdk-17-jdk python3 clang lld pkg-config libsdl2-dev libsdl2-mixer-dev libglew-dev libstb-dev
 ```
-cd examples/android  && \
-  gradle clean assembleDebug \
-    --refresh-dependencies \
-    --no-daemon
+
+Then
+
+```sh
+python3 python/whaley.py sbt -- nativeApp/runNative
+```
+
+## CLI
+
+Start the relay:
+
+```sh
+swift run whaley-relay
+```
+
+Then run the iOS `Whaley` app on simulator, and with a second terminal at repository root:
+
+```sh
+swift run whaley observe
 ```

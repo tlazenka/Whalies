@@ -1,0 +1,20 @@
+{
+  "gamePk": 822727,
+  "date": "2026-06-03",
+  "away": "Miami Marlins",
+  "home": "Washington Nationals",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Lopez, O (9, fielding).", "PB": "Mack (2)."},
+    "home": {"E": "Lord (1, missed catch).", "PB": null}
+  },
+  "allPlaysCount": 77,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "fielding", "batter": "Dylan Crews", "consequence": "Crews reached on a fielder's choice with the error; Ruiz scored, García Jr. to third, Wood to second", "runScored": true},
+    {"inning": 6, "half": "top", "chargedTo": "home", "fielder": "Brad Lord", "position": "P",
+     "kind": "missed catch", "batter": "Kyle Stowers", "consequence": "Stowers reached first when the pitcher missed the catch on the first baseman's throw", "runScored": false}
+  ],
+  "notes": ""
+}

@@ -1,0 +1,20 @@
+{
+  "gamePk": 823594,
+  "date": "2026-08-01",
+  "away": "Miami Marlins",
+  "home": "New York Mets",
+  "linescoreErrors": {"away": 0, "home": 2},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Lindor (7, fielding); Thornton, Z (1, throw).", "PB": null}
+  },
+  "allPlaysCount": 77,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "top", "chargedTo": "home", "fielder": "Francisco Lindor", "position": "SS",
+     "kind": "fielding", "batter": "Otto Lopez", "consequence": "Lopez reached first on Lindor's fielding error with nobody on", "runScored": false},
+    {"inning": 2, "half": "top", "chargedTo": "home", "fielder": "Zac Thornton", "position": "P",
+     "kind": "throwing", "batter": "Esteury Ruiz", "consequence": "Ruiz singled on a soft grounder to the pitcher and took second on Thornton's throwing error", "runScored": false}
+  ],
+  "notes": ""
+}

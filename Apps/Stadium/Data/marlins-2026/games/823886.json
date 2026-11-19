@@ -1,0 +1,18 @@
+{
+  "gamePk": 823886,
+  "date": "2026-04-06",
+  "away": "Cincinnati Reds",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Sanoja (2, throw).", "PB": null}
+  },
+  "allPlaysCount": 67,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 4, "half": "top", "chargedTo": "home", "fielder": "Javier Sanoja", "position": "3B",
+     "kind": "throwing", "batter": "Eugenio Suárez", "consequence": "Suárez reached on the throwing error; Sal Stewart was thrown out at third on the same play", "runScored": false}
+  ],
+  "notes": ""
+}

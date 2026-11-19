@@ -1,0 +1,26 @@
+{
+  "gamePk": 822981,
+  "date": "2026-05-16",
+  "away": "Miami Marlins",
+  "home": "Tampa Bay Rays",
+  "linescoreErrors": {"away": 4, "home": 1},
+  "boxscore": {
+    "away": {"E": "Edwards, X 2 (4, throw, fielding); Sanoja (4, fielding); Mack (2, throw).", "PB": null},
+    "home": {"E": "Palacios, R (3, throw).", "PB": null}
+  },
+  "allPlaysCount": 88,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "top", "chargedTo": "home", "fielder": "Richie Palacios", "position": "2B",
+     "kind": "throwing", "batter": "Otto Lopez", "consequence": "Lopez singled and advanced to second on the throwing error", "runScored": false},
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Xavier Edwards", "position": "2B",
+     "kind": "throwing", "batter": "Taylor Walls", "consequence": "Walls bunt-singled and advanced to second on the throwing error", "runScored": false},
+    {"inning": 5, "half": "bottom", "chargedTo": "away", "fielder": "Xavier Edwards", "position": "2B",
+     "kind": "fielding", "batter": "Taylor Walls", "consequence": "Walls reached base on the fielding error", "runScored": false},
+    {"inning": 5, "half": "bottom", "chargedTo": "away", "fielder": "Javier Sanoja", "position": "3B",
+     "kind": "fielding", "batter": "Chandler Simpson", "consequence": "Simpson reached on the fielding error; Walls advanced to second", "runScored": false},
+    {"inning": 9, "half": "bottom", "chargedTo": "away", "fielder": "Joe Mack", "position": "C",
+     "kind": "throwing", "batter": "Jonny DeLuca", "consequence": "DeLuca struck out; Mullins stole second and went to third on the catcher's throwing error", "runScored": false}
+  ],
+  "notes": ""
+}

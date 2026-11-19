@@ -1,0 +1,20 @@
+{
+  "gamePk": 823423,
+  "date": "2026-08-18",
+  "away": "Miami Marlins",
+  "home": "Philadelphia Phillies",
+  "linescoreErrors": {"away": 0, "home": 2},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Arraez (6, throw); Kerkering (1, throw).", "PB": null}
+  },
+  "allPlaysCount": 74,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 6, "half": "top", "chargedTo": "home", "fielder": "Luis Arraez", "position": "2B",
+     "kind": "throwing", "batter": "Heriberto Hernández", "consequence": "Hernández grounded into a force out of Conine at second; Arraez's throwing error let Lopez score", "runScored": true},
+    {"inning": 8, "half": "top", "chargedTo": "home", "fielder": "Orion Kerkering", "position": "P",
+     "kind": "throwing", "batter": "Griffin Conine", "consequence": "Conine reached on Kerkering's throwing error and advanced to second", "runScored": false}
+  ],
+  "notes": ""
+}

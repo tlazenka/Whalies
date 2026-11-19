@@ -1,0 +1,18 @@
+{
+  "gamePk": 824165,
+  "date": "2026-07-21",
+  "away": "Miami Marlins",
+  "home": "Houston Astros",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Sanoja (9, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 70,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 5, "half": "bottom", "chargedTo": "away", "fielder": "Javier Sanoja", "position": "3B",
+     "kind": "throwing", "batter": "Christian Vazquez", "consequence": "Vazquez reached first on the throwing error; no runners on", "runScored": false}
+  ],
+  "notes": ""
+}

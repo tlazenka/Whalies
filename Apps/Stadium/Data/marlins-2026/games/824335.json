@@ -1,0 +1,18 @@
+{
+  "gamePk": 824335,
+  "date": "2026-07-02",
+  "away": "Miami Marlins",
+  "home": "Colorado Rockies",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Castro, W (7, fielding).", "PB": null}
+  },
+  "allPlaysCount": 84,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "top", "chargedTo": "home", "fielder": "Willi Castro", "position": "SS",
+     "kind": "fielding", "batter": "Liam Hicks", "consequence": "Hicks reached base on the fielding error with nobody on; later scored on an Edwards force out", "runScored": false}
+  ],
+  "notes": ""
+}

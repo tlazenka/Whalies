@@ -1,0 +1,20 @@
+{
+  "gamePk": 823956,
+  "date": "2026-04-28",
+  "away": "Miami Marlins",
+  "home": "Los Angeles Dodgers",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Lopez, O (6, throw).", "PB": null},
+    "home": {"E": "Ohtani (1, throw).", "PB": null}
+  },
+  "allPlaysCount": 75,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "bottom", "chargedTo": "away", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "throwing", "batter": "Dalton Rushing", "consequence": "Rushing reached on the throwing error and advanced to second with nobody else on base", "runScored": false},
+    {"inning": 2, "half": "top", "chargedTo": "home", "fielder": "Shohei Ohtani", "position": "P",
+     "kind": "throwing", "batter": null, "consequence": "Agustín Ramírez stole second and went on to third on the pitcher's throwing error", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

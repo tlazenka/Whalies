@@ -1,0 +1,22 @@
+{
+  "gamePk": 823763,
+  "date": "2026-07-18",
+  "away": "Miami Marlins",
+  "home": "Milwaukee Brewers",
+  "linescoreErrors": {"away": 3, "home": 0},
+  "boxscore": {
+    "away": {"E": "Lopez, O 2 (15, fielding, fielding); Stowers (5, throw).", "PB": null},
+    "home": {"E": null, "PB": "Contreras, Wm (2)."}
+  },
+  "allPlaysCount": 81,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 2, "half": "bottom", "chargedTo": "away", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "fielding", "batter": "Joey Ortiz", "consequence": "Ortiz reached base on the fielding error; Lara advanced from first to second", "runScored": false},
+    {"inning": 7, "half": "bottom", "chargedTo": "away", "fielder": "Kyle Stowers", "position": "1B",
+     "kind": "throwing", "batter": "Braden Shewmake", "consequence": "Shewmake singled and took second; Pratt went from second to third on the throwing error; both scored later on a Yelich double", "runScored": false},
+    {"inning": 7, "half": "bottom", "chargedTo": "away", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "fielding", "batter": "Jackson Chourio", "consequence": "Chourio reached base on the fielding error; no runners named", "runScored": false}
+  ],
+  "notes": ""
+}

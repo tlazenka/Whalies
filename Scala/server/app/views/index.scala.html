@@ -1,0 +1,40 @@
+@(gameName: String)
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>@gameName</title>
+  <link rel="stylesheet" href="./assets/styles.css">
+</head>
+<body>
+  <main class="game-shell">
+    <div class="canvas-stage">
+      <canvas id="game" width="320" height="568" tabindex="0" aria-label="@gameName">
+        This game requires Canvas 2D support.
+      </canvas>
+      <div id="loading" class="notice" role="status" aria-label="Loading"><span class="spinner" aria-hidden="true"></span></div>
+      <div id="error" class="notice error" role="alert" hidden></div>
+    </div>
+    <button id="invincibility" class="invincibility-toggle" type="button" role="switch"
+      aria-label="Invincibility" aria-checked="false" aria-controls="game" aria-keyshortcuts="F1 I"
+      title="Invincibility off (F1 or I)" disabled>
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
+        <polygon id="invincibility-star"></polygon>
+      </svg>
+    </button>
+  </main>
+  <p id="status" class="screen-reader-only" role="status" aria-live="polite"></p>
+  <noscript><p class="notice">Enable JavaScript to play @gameName.</p></noscript>
+  <script type="module">
+    import('./assets/main.js').catch(error => {
+      const panel = document.getElementById('error');
+      document.getElementById('loading').hidden = true;
+      panel.hidden = false;
+      panel.textContent = 'The game could not start. ' + error.message;
+      console.error(error);
+    });
+  </script>
+</body>
+</html>

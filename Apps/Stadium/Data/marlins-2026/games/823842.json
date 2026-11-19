@@ -1,0 +1,18 @@
+{
+  "gamePk": 823842,
+  "date": "2026-07-12",
+  "away": "Cleveland Guardians",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Edwards, X (6, fielding).", "PB": null}
+  },
+  "allPlaysCount": 78,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 7, "half": "top", "chargedTo": "home", "fielder": "Xavier Edwards", "position": "2B",
+     "kind": "fielding", "batter": "Kyle Manzardo", "consequence": "Manzardo reached first on the fielding error; Bazzana went from first to third and later scored on a Watson single", "runScored": false}
+  ],
+  "notes": ""
+}

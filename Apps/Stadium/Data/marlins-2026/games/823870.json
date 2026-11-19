@@ -1,0 +1,18 @@
+{
+  "gamePk": 823870,
+  "date": "2026-05-07",
+  "away": "Baltimore Orioles",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Mayo (4, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 73,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 9, "half": "bottom", "chargedTo": "away", "fielder": "Coby Mayo", "position": "3B",
+     "kind": "throwing", "batter": "Javier Sanoja", "consequence": "Sanoja reached on the throwing error; Mack scored from second", "runScored": true}
+  ],
+  "notes": ""
+}

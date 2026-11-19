@@ -1,0 +1,18 @@
+{
+  "gamePk": 823865,
+  "date": "2026-05-19",
+  "away": "Atlanta Braves",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Kim, Ha (3, fielding).", "PB": null},
+    "home": {"E": null, "PB": "Mack (1)."}
+  },
+  "allPlaysCount": 86,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 5, "half": "bottom", "chargedTo": "away", "fielder": "Ha-Seong Kim", "position": "SS",
+     "kind": "fielding", "batter": "Heriberto Hernández", "consequence": "Hernández reached on the fielding error on a grounder; Lopez advanced from first to second", "runScored": false}
+  ],
+  "notes": ""
+}

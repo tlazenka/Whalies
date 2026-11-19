@@ -1,0 +1,20 @@
+{
+  "gamePk": 823847,
+  "date": "2026-07-07",
+  "away": "Seattle Mariners",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Robles (1, fielding).", "PB": null},
+    "home": {"E": "Edwards, X (5, interference).", "PB": null}
+  },
+  "allPlaysCount": 86,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 4, "half": "bottom", "chargedTo": "away", "fielder": "Victor Robles", "position": "CF",
+     "kind": "fielding", "batter": "Liam Hicks", "consequence": "Hicks doubled and advanced from second to third on the fielding error; later scored on a sac fly", "runScored": false},
+    {"inning": 8, "half": "top", "chargedTo": "home", "fielder": "Xavier Edwards", "position": "2B",
+     "kind": "interference", "batter": "Josh Naylor", "consequence": "Naylor singled, Arozarena scored on the hit, Raleigh to third; Naylor took second on the interference error", "runScored": true}
+  ],
+  "notes": ""
+}

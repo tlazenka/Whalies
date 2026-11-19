@@ -1,0 +1,24 @@
+{
+  "gamePk": 823846,
+  "date": "2026-07-09",
+  "away": "Seattle Mariners",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 2, "home": 2},
+  "boxscore": {
+    "away": {"E": "Emerson 2 (5, throw, missed catch).", "PB": null},
+    "home": {"E": "Junk 2 (2, throw, pickoff).", "PB": null}
+  },
+  "allPlaysCount": 79,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 4, "half": "bottom", "chargedTo": "away", "fielder": "Colt Emerson", "position": "SS",
+     "kind": "throwing", "batter": "Liam Hicks", "consequence": "Call overturned on Marlins challenge; Hicks reached on a fielder's choice, Marsee scored, Jimenez to second", "runScored": true},
+    {"inning": 4, "half": "bottom", "chargedTo": "away", "fielder": "Colt Emerson", "position": "SS",
+     "kind": "missed catch", "batter": "Liam Hicks", "consequence": "Second error on the same play as the throwing error above; Hicks safe, Marsee scored, Jimenez to second", "runScored": true},
+    {"inning": 2, "half": "top", "chargedTo": "home", "fielder": "Janson Junk", "position": "P",
+     "kind": "throwing", "batter": null, "consequence": "on an event the feed labels caught stealing at third, Josh Naylor stole second and, on the pitcher's throwing error, took third and came around to score", "runScored": true, "source": "playEvents"},
+    {"inning": 2, "half": "top", "chargedTo": "home", "fielder": "Janson Junk", "position": "P",
+     "kind": "pickoff", "batter": null, "consequence": "pickoff throw to first went wide; no runner advance or run recorded on the error", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "gamePk": 823862,
+  "date": "2026-05-23",
+  "away": "New York Mets",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Norby (3, dropped foul).", "PB": null}
+  },
+  "allPlaysCount": 66,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 9, "half": "top", "chargedTo": "home", "fielder": "Connor Norby", "position": "1B",
+     "kind": "dropped foul", "batter": null, "consequence": "Norby dropped a foul pop-up; the batter stayed at the plate and later put a ball in play for an out", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

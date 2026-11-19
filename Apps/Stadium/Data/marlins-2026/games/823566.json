@@ -1,0 +1,20 @@
+{
+  "gamePk": 823566,
+  "date": "2026-04-05",
+  "away": "Miami Marlins",
+  "home": "New York Yankees",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Norby (1, throw).", "PB": null},
+    "home": {"E": "Caballero (2, throw).", "PB": null}
+  },
+  "allPlaysCount": 83,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Connor Norby", "position": "1B",
+     "kind": "throwing", "batter": "Ben Rice", "consequence": "Rice reached on a fielder's choice and took second on the throwing error; Aaron Judge scored and Cody Bellinger went to third", "runScored": true},
+    {"inning": 6, "half": "top", "chargedTo": "home", "fielder": "José Caballero", "position": "SS",
+     "kind": "throwing", "batter": "Heriberto Hernández", "consequence": "Hernández reached on the throwing error; Jakob Marsee scored and Otto Lopez went to third", "runScored": true}
+  ],
+  "notes": ""
+}

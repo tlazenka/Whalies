@@ -1,0 +1,25 @@
+name: Whaley Python tooling and assets
+on:
+  push:
+    branches: ['feature/scala-*', develop]
+    paths: ['Scala/**', 'python/**', 'Sources/WhaleyObjectiveC/**', 'scripts/test-whaley-*.sh', 'scripts/tests/whaley-*.c', 'Apps/Whaley/AppIcons.xcassets/**', 'Apps/Stadium/**', 'Apps/Whaley2010/Resources/**', 'Sources/WhaleySpriteKit/Resources/**', '.github/workflows/whaley-presentation.yml']
+  pull_request:
+    paths: ['Scala/**', 'python/**', 'Sources/WhaleyObjectiveC/**', 'scripts/test-whaley-*.sh', 'scripts/tests/whaley-*.c', 'Apps/Whaley/AppIcons.xcassets/**', 'Apps/Stadium/**', 'Apps/Whaley2010/Resources/**', 'Sources/WhaleySpriteKit/Resources/**', '.github/workflows/whaley-presentation.yml']
+permissions:
+  contents: read
+jobs:
+  assets:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Execute jump trail policy regression tests
+        run: bash scripts/test-whaley-trails.sh
+      - name: Execute flame motion policy regression tests
+        run: bash scripts/test-whaley-flames.sh
+      - name: Execute Python tooling regression tests
+        run: python3 python/whaley.py test -v
+      - name: Validate and generate from every real level and original atlas
+        run: python3 python/whaley.py assets --source-output Scala/target/generated --asset-output Scala/target/assets

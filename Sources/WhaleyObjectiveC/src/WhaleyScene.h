@@ -10,16 +10,21 @@
 #import "Hazard.h"
 #import "Helpers.h"
 #import "Level.h"
-#import "MainMenu.h"
 #import "Player.h"
 #import "Projectile.h"
-#import "SimpleAudioEngine.h"
-#import "WhaleyHud.h"
 #import "cocos2d.h"
 
+@class CDSoundSource;
 @class WhaleyHud;
 @class WhaleyWinScreen;
+@class WhaleyExpressionPresentation;
 
+// Opt-in mode shared by the original Obj-C simulation and the SwiftUI 3D lens.
+// The 2D SpriteKit and cocos2d behavior remains unchanged when disabled.
+FOUNDATION_EXPORT BOOL WhaleyScene3DModeEnabled;
+FOUNDATION_EXPORT BOOL WhaleyScene3DPlaceAtAnchor;
+FOUNDATION_EXPORT CGPoint WhaleyScene3DJumpAnchorBottom;
+FOUNDATION_EXPORT NSUInteger WhaleyScene3DJumpSequence;
 FOUNDATION_EXPORT const NSInteger FLAME_DIMMED;
 FOUNDATION_EXPORT const NSInteger FLAME_OPAQUE;
 FOUNDATION_EXPORT const NSInteger TouchBubbleFudgeOffset;
@@ -41,6 +46,9 @@ FOUNDATION_EXPORT BOOL WhaleySrcTrajectoryProjectPlayer(Player *player, NSTimeIn
     NSInteger _defaultBounces;
     CGPoint _currentLocation;
     BOOL _allowMiddleBounce;
+#if defined(WHALEY_SPRITEKIT_COMPAT)
+    WhaleyExpressionPresentation *_expressionPresentation;
+#endif
 }
 
 @property (nonatomic, retain) CCTMXTiledMap *tileMap;
@@ -77,9 +85,18 @@ FOUNDATION_EXPORT BOOL WhaleySrcTrajectoryProjectPlayer(Player *player, NSTimeIn
 
 - (id)initWithLevel:(Level *)level withGameMode:(NSInteger)gameMode;
 
+// The compatibility scheduler coalesces overdue audio beats by this selector.
+- (void)playBg:(ccTime)dt;
 - (void)switchPhase:(ccTime)dt;
+#if defined(WHALEY_SPRITEKIT_COMPAT)
+- (void)updateExpression:(ccTime)dt;
+#endif
 
 - (NSInteger)calculateScore;
 
 @end
+
+// Shared engine hooks; no independent renderer-owned gameplay state.
+FOUNDATION_EXPORT void WhaleySceneApply3DEnvironment(Whaley *game);
+FOUNDATION_EXPORT BOOL WhaleySceneIs3DFoundation(Projectile *projectile);
 #endif

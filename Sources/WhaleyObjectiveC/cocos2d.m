@@ -2,8 +2,11 @@
 #import "cocos2d.h"
 #import <objc/message.h>
 #import <zlib.h>
+#import <math.h>
 #import "WhaleyBootstrap.h"
 #import "WhaleyRuntimeBridge.h"
+#import "WhaleySpriteFrameTarget.h"
+#import "src/WhaleySpriteFrameGeometry.h"
 
 @implementation CCCompatTrace
 static BOOL _traceEnabled = NO;
@@ -122,13 +125,21 @@ static const NSUInteger CCCompatTraceCapacity = 4096;
 - (CCAction *)runAction:(CCAction *)action {
     void *raw = WhaleyRenderGameAction(action.gameAction, (__bridge void *)self);
     SKAction *rendered = (__bridge SKAction *)raw;
-    [super runAction:rendered];
+    // Preserve per-action identity for stopAction:, without cancelling siblings.
+    NSString *key = [NSString stringWithFormat:@"whaley.cocos2d.action.%p", action];
+    [super runAction:rendered withKey:key];
     WhaleyReleaseRenderedObject(raw);
     [CCCompatTrace record:@"CCNode.runAction" detail:NSStringFromClass(action.class)];
     return action;
 }
 - (void)stopAction:(CCAction *)action {
-    [self removeAllActions];
+    if (!action) return;
+    [self removeActionForKey:[NSString stringWithFormat:@"whaley.cocos2d.action.%p", action]];
+}
+- (void)stopAllActions {
+    // runAction: installs the translated action on this SKNode, not its sprite child.
+    // Cancel in place: do not detach children, reset transforms, or unschedule selectors.
+    [super removeAllActions];
 }
 - (CGPoint)convertToNodeSpace:(CGPoint)point {
     return [self convertPoint:point fromNode:self.scene];
@@ -150,20 +161,46 @@ static const NSUInteger CCCompatTraceCapacity = 4096;
 @implementation CCScene
 @end
 
+@interface CCSprite () <WhaleySpriteFrameTarget>
+- (void)setDisplayFrame:(CCSpriteFrame *)frame;
+- (void)setTextureRect:(CGRect)rect rotated:(BOOL)rotated untrimmedSize:(CGSize)size;
+- (void)cc_updatePresentationTransform;
+@end
+
 @implementation CCSprite {
     SKSpriteNode *_spriteKitNode;
+    SKTexture *_sourceTexture;
+    NSString *_atlasFile;
+    CGSize _atlasSize;
     CGRect _textureRect;
     CGPoint _frameOffset;
+    BOOL _rectRotated;
     BOOL _flipX, _flipY;
     CCSpriteBatchNode *_batchNode;
 }
+- (instancetype)init {
+    if ((self = [super init])) {
+        // Retained separately from the children collection: removing children
+        // must not leave a dangling MRC pointer to the drawable.
+        _spriteKitNode = [[SKSpriteNode alloc] init];
+        _spriteKitNode.size = CGSizeZero;
+        [self addChild:(CCNode *)(id)_spriteKitNode];
+    }
+    return self;
+}
+- (void)dealloc {
+    [_spriteKitNode release];
+    [_sourceTexture release];
+    [_atlasFile release];
+    [super dealloc];
+}
 + (instancetype)spriteWithFile:(NSString *)file {
     CCSprite *n = [self new];
-    SKTexture *t = WhaleySrcTexture(file);
-    n->_spriteKitNode = [SKSpriteNode spriteNodeWithTexture:t];
-    n.contentSize = t.size;
-    [n addChild:(CCNode *)(id)n->_spriteKitNode];
-    [CCCompatTrace record:@"CCSprite.file" detail:[NSString stringWithFormat:@"%@ %.0fx%.0f", file, t.size.width, t.size.height]];
+    n->_sourceTexture = [WhaleySrcTexture(file) retain];
+    n->_atlasFile = [file copy];
+    n->_atlasSize = n->_sourceTexture.size;
+    n.textureRect = (CGRect){CGPointZero, n->_atlasSize};
+    [CCCompatTrace record:@"CCSprite.file" detail:[NSString stringWithFormat:@"%@ %.0fx%.0f", file, n.contentSize.width, n.contentSize.height]];
     return [n autorelease];
 }
 + (instancetype)spriteWithSpriteFrameName:(NSString *)name {
@@ -172,46 +209,108 @@ static const NSUInteger CCCompatTraceCapacity = 4096;
         [CCCompatTrace record:@"CCSprite.frame.missing" detail:name];
         return nil;
     }
-    CGRect r = frame.frameRect;
     CCSprite *n = [self new];
-    if (frame.atlasFile.length > 0) {
-        SKTexture *atlas = WhaleySrcTexture(frame.atlasFile);
-        CGSize a = frame.atlasSize;
-        CGRect normalized = CGRectMake(r.origin.x / a.width, 1.0 - (r.origin.y + r.size.height) / a.height, r.size.width / a.width, r.size.height / a.height);
-        SKTexture *texture = [SKTexture textureWithRect:normalized inTexture:atlas];
-        n->_spriteKitNode = [SKSpriteNode spriteNodeWithTexture:texture];
-        [n addChild:(CCNode *)(id)n->_spriteKitNode];
-    }
-    n.contentSize = CGSizeEqualToSize(frame.originalSize, CGSizeZero) ? r.size : frame.originalSize;
-    n.textureRect = r;
-    n->_frameOffset = frame.frameOffset;
-    [n cc_updatePresentationTransform];
-    [CCCompatTrace record:@"CCSprite.frame" detail:[NSString stringWithFormat:@"%@ %@ crop %.0fx%.0f logical %.0fx%.0f offset %@", name, frame.atlasFile, r.size.width, r.size.height, n.contentSize.width, n.contentSize.height, NSStringFromCGPoint(frame.frameOffset)]];
+    [n setDisplayFrame:frame];
     return [n autorelease];
 }
-- (SKSpriteNode *)spriteKitNode {
-    return _spriteKitNode;
+- (SKSpriteNode *)spriteKitNode { return _spriteKitNode; }
+- (CGRect)textureRect { return _textureRect; }
+
+- (BOOL)whaleyApplySpriteFrameNamed:(NSString *)name {
+    CCSpriteFrame *frame = [[CCSpriteFrameCache sharedSpriteFrameCache] spriteFrameByName:name];
+    if (!frame) {
+        [CCCompatTrace record:@"CCSprite.frame.missing" detail:name];
+        return NO;
+    }
+    [self setDisplayFrame:frame];
+    return YES;
 }
-- (CGRect)textureRect {
-    return _textureRect;
-}
-- (void)setTextureRect:(CGRect)v {
-    _textureRect = v;
-}
-- (void)cc_updatePresentationTransform {
-    if (!_spriteKitNode) {
+
+- (void)setDisplayFrame:(CCSpriteFrame *)frame {
+    NSParameterAssert(frame);
+    CGSize logical = CGSizeEqualToSize(frame.originalSize, CGSizeZero)
+        ? frame.frameRect.size : frame.originalSize;
+    BOOL hasAtlas = frame.atlasFile.length > 0;
+    WhaleyFrameRect region;
+    WhaleyFrameRect r = {frame.frameRect.origin.x, frame.frameRect.origin.y,
+                        frame.frameRect.size.width, frame.frameRect.size.height};
+    // Validate before changing any state. Missing-sheet semantic frames retain
+    // their previous transparent-placeholder behavior, never a stale texture.
+    BOOL valid = isfinite(logical.width) && isfinite(logical.height) &&
+        logical.width >= 0 && logical.height >= 0 &&
+        isfinite(frame.frameOffset.x) && isfinite(frame.frameOffset.y) &&
+        (!hasAtlas || WhaleyFrameRegion(r, frame.rotated,
+                                       frame.atlasSize.width, frame.atlasSize.height, &region));
+    if (!valid) {
+        [NSException raise:NSInvalidArgumentException format:@"Invalid sprite frame %@", frame.frameName];
         return;
     }
-    CGPoint a = self.anchorPoint;
-    CGSize size = self.contentSize;
-    _spriteKitNode.anchorPoint = a;
-    _spriteKitNode.xScale = _flipX ? -1 : 1;
-    _spriteKitNode.yScale = _flipY ? -1 : 1;
-    CGFloat flipCompX = _flipX ? (1.0 - 2.0 * a.x) * size.width : 0;
-    CGFloat flipCompY = _flipY ? (1.0 - 2.0 * a.y) * size.height : 0;
-    CGFloat offsetX = _flipX ? -_frameOffset.x : _frameOffset.x;
-    CGFloat offsetY = _flipY ? -_frameOffset.y : _frameOffset.y;
-    _spriteKitNode.position = CGPointMake(flipCompX + offsetX, flipCompY + offsetY);
+    BOOL sameAtlas = [_atlasFile isEqualToString:frame.atlasFile] &&
+        CGSizeEqualToSize(_atlasSize, frame.atlasSize);
+    // Custom actions are called every render frame. Reapply only on a real
+    // descriptor change; a manual textureRect/contentSize edit breaks equality.
+    if (sameAtlas && CGRectEqualToRect(_textureRect, frame.frameRect) &&
+        CGSizeEqualToSize(self.contentSize, logical) &&
+        CGPointEqualToPoint(_frameOffset, frame.frameOffset) &&
+        _rectRotated == frame.rotated) return;
+    if (!sameAtlas) {
+        SKTexture *source = hasAtlas ? [WhaleySrcTexture(frame.atlasFile) retain] : nil;
+        [_sourceTexture release];
+        _sourceTexture = source;
+        [_atlasFile release];
+        _atlasFile = [frame.atlasFile copy];
+        _atlasSize = frame.atlasSize;
+    }
+    _frameOffset = frame.frameOffset;
+    [self setTextureRect:frame.frameRect rotated:frame.rotated untrimmedSize:logical];
+    [CCCompatTrace record:@"CCSprite.frame"
+        detail:[NSString stringWithFormat:@"%@ %@ crop %@ logical %@ offset %@ rotated=%d",
+            frame.frameName, frame.atlasFile, NSStringFromCGRect(frame.frameRect),
+            NSStringFromCGSize(logical), NSStringFromCGPoint(frame.frameOffset), frame.rotated]];
+}
+
+- (void)setTextureRect:(CGRect)rect {
+    // cocos2d's simple setter resets logical size and rotation, but retains
+    // the last display frame's unflipped offset. It always crops the atlas,
+    // NEVER the previously cropped texture.
+    [self setTextureRect:rect rotated:NO untrimmedSize:rect.size];
+}
+- (void)setTextureRect:(CGRect)rect rotated:(BOOL)rotated untrimmedSize:(CGSize)size {
+    WhaleyFrameRect region = {0};
+    WhaleyFrameRect r = {rect.origin.x, rect.origin.y, rect.size.width, rect.size.height};
+    BOOL finite = isfinite(r.x) && isfinite(r.y) && isfinite(r.width) && isfinite(r.height) &&
+        r.x >= 0 && r.y >= 0 && r.width >= 0 && r.height >= 0 &&
+        isfinite(size.width) && isfinite(size.height) && size.width >= 0 && size.height >= 0;
+    if (!finite || (_sourceTexture && !WhaleyFrameRegion(r, rotated,
+                                      _atlasSize.width, _atlasSize.height, &region))) {
+        [NSException raise:NSInvalidArgumentException format:@"Invalid sprite texture rect %@", NSStringFromCGRect(rect)];
+        return;
+    }
+    SKTexture *texture = nil;
+    if (_sourceTexture && rect.size.width > 0 && rect.size.height > 0) {
+        texture = [SKTexture textureWithRect:CGRectMake(region.x, region.y, region.width, region.height)
+                                  inTexture:_sourceTexture];
+        texture.filteringMode = _sourceTexture.filteringMode;
+    }
+    _textureRect = rect;
+    _rectRotated = rotated;
+    [super setContentSize:size];
+    _spriteKitNode.texture = texture;
+    [self cc_updatePresentationTransform];
+}
+- (void)cc_updatePresentationTransform {
+    CGPoint anchor = self.anchorPoint;
+    CGSize logical = self.contentSize;
+    WhaleyFramePlacement p = WhaleyPlaceFrame(_textureRect.size.width, _textureRect.size.height,
+        logical.width, logical.height, _frameOffset.x, _frameOffset.y,
+        anchor.x, anchor.y, _flipX, _flipY, _rectRotated);
+    _spriteKitNode.anchorPoint = CGPointMake(0.5, 0.5);
+    // A missing texture with nonzero size would otherwise draw a white quad.
+    _spriteKitNode.size = _spriteKitNode.texture ? CGSizeMake(p.width, p.height) : CGSizeZero;
+    _spriteKitNode.position = CGPointMake(p.centerX, p.centerY);
+    _spriteKitNode.zRotation = p.quarterTurn ? (CGFloat)M_PI_2 : 0;
+    _spriteKitNode.xScale = p.scaleX;
+    _spriteKitNode.yScale = p.scaleY;
 }
 - (void)setAnchorPoint:(CGPoint)v {
     [super setAnchorPoint:v];
@@ -221,26 +320,18 @@ static const NSUInteger CCCompatTraceCapacity = 4096;
     [super setContentSize:v];
     [self cc_updatePresentationTransform];
 }
-- (BOOL)flipX {
-    return _flipX;
-}
+- (BOOL)flipX { return _flipX; }
 - (void)setFlipX:(BOOL)v {
     _flipX = v;
     [self cc_updatePresentationTransform];
 }
-- (BOOL)flipY {
-    return _flipY;
-}
+- (BOOL)flipY { return _flipY; }
 - (void)setFlipY:(BOOL)v {
     _flipY = v;
     [self cc_updatePresentationTransform];
 }
-- (CCSpriteBatchNode *)batchNode {
-    return _batchNode;
-}
-- (void)setBatchNode:(CCSpriteBatchNode *)v {
-    _batchNode = v;
-}
+- (CCSpriteBatchNode *)batchNode { return _batchNode; }
+- (void)setBatchNode:(CCSpriteBatchNode *)v { _batchNode = v; }
 - (CGRect)boundingBox {
     return CGRectMake(self.position.x - self.contentSize.width * self.scaleX * self.anchorPoint.x, self.position.y - self.contentSize.height * self.scaleY * self.anchorPoint.y, self.contentSize.width * self.scaleX, self.contentSize.height * self.scaleY);
 }
@@ -488,12 +579,23 @@ static NSData *CCGunzip(NSData *compressed) {
 @property (nonatomic, strong) NSMutableDictionary *currentObject;
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSMutableDictionary *> *gidProperties;
 @property (nonatomic, strong) NSMutableArray<NSDictionary *> *decodedLayers;
+@property (nonatomic, strong) NSMutableArray<NSDictionary *> *visualTilesets;
+@property (nonatomic, strong) NSMutableDictionary *currentTileset;
 @end
 
 @interface CCTMXLayer ()
 @property (nonatomic, copy, readwrite) NSString *layerName;
 @property (nonatomic, assign) void *tileMapBox;
 @property (nonatomic) CGSize compatTileSize;
+@property (nonatomic, strong) SKTexture *visualAtlas;
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, SKSpriteNode *> *visibleTiles;
+@property (nonatomic) NSInteger firstVisualGID;
+@property (nonatomic) CGFloat visualMargin;
+@property (nonatomic) CGFloat visualSpacing;
+@property (nonatomic) CGSize visualPixelSize;
+@property (nonatomic, strong) NSData *sourceGIDs;
+- (void)buildVisualTiles:(NSDictionary *)spec;
+- (void)updateVisualTileAt:(CGPoint)coordinate;
 @end
 
 @interface CCTMXTiledMap ()
@@ -506,12 +608,25 @@ static NSData *CCGunzip(NSData *compressed) {
 @implementation CCTMXParser
 - (instancetype)init {
     if ((self = [super init])) {
-        _groups = [NSMutableDictionary dictionary];
-        _gidProperties = [NSMutableDictionary dictionary];
-        _decodedLayers = [NSMutableArray array];
+        self.groups = [NSMutableDictionary dictionary];
+        self.gidProperties = [NSMutableDictionary dictionary];
+        self.decodedLayers = [NSMutableArray array];
+        self.visualTilesets = [NSMutableArray array];
         _currentTileGID = -1;
     }
     return self;
+}
+- (void)dealloc {
+    [_currentLayer release];
+    [_layerData release];
+    [_groups release];
+    [_currentGroup release];
+    [_currentObject release];
+    [_gidProperties release];
+    [_decodedLayers release];
+    [_visualTilesets release];
+    [_currentTileset release];
+    [super dealloc];
 }
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)element namespaceURI:(NSString *)uri qualifiedName:(NSString *)qName attributes:(NSDictionary<NSString *, NSString *> *)a {
     if ([element isEqual:@"map"]) {
@@ -519,6 +634,14 @@ static NSData *CCGunzip(NSData *compressed) {
         self.map.tileSize = CGSizeMake(a[@"tilewidth"].doubleValue, a[@"tileheight"].doubleValue);
     } else if ([element isEqual:@"tileset"]) {
         self.firstGID = a[@"firstgid"].integerValue;
+        self.currentTileset = [[@{
+            @"firstgid": @(self.firstGID),
+            @"margin": @([a[@"margin"] doubleValue]),
+            @"spacing": @([a[@"spacing"] doubleValue])
+        } mutableCopy] autorelease];
+    } else if ([element isEqual:@"image"] && self.currentTileset) {
+        self.currentTileset[@"source"] = a[@"source"] ?: @"";
+        [self.visualTilesets addObject:[[self.currentTileset copy] autorelease]];
     } else if ([element isEqual:@"tile"]) {
         self.currentTileGID = self.firstGID + a[@"id"].integerValue;
         self.gidProperties[@(self.currentTileGID)] = [NSMutableDictionary dictionary];
@@ -570,6 +693,8 @@ static NSData *CCGunzip(NSData *compressed) {
         self.currentLayer = nil;
     } else if ([element isEqual:@"tile"]) {
         self.currentTileGID = -1;
+    } else if ([element isEqual:@"tileset"]) {
+        self.currentTileset = nil;
     } else if ([element isEqual:@"object"] && self.currentObject) {
         CGFloat h = [self.currentObject[@"height"] doubleValue];
         CGFloat rawY = [self.currentObject[@"y"] doubleValue];
@@ -583,6 +708,94 @@ static NSData *CCGunzip(NSData *compressed) {
 @end
 
 @implementation CCTMXLayer
+- (void)dealloc {
+    [_visibleTiles release];
+    [_visualAtlas release];
+    [_sourceGIDs release];
+    [_layerName release];
+    [super dealloc];
+}
+
+// The original compatibility parser retained collision GIDs but painted no
+// visible tiles. Render the Background layer from its real TMX tileset atlas.
+// The Meta layer remains authoritative for collision and is never displayed.
+- (void)buildVisualTiles:(NSDictionary *)spec {
+    NSString *filename = spec[@"source"];
+    NSURL *url = filename.length ? WhaleySrcResourceURL(filename) : nil;
+    UIImage *image = url ? [UIImage imageWithContentsOfFile:url.path] : nil;
+    if (!image || !image.CGImage || !self.parent) {
+        NSLog(@"Whaley visible tiles missing image: %@", filename);
+        return;
+    }
+    // Use actual PNG pixel dimensions. SKTexture.size can report a scaled
+    // point size depending on the image's scale, breaking TMX atlas UVs.
+    self.visualPixelSize = CGSizeMake(CGImageGetWidth(image.CGImage),
+                                      CGImageGetHeight(image.CGImage));
+    self.visualAtlas = [SKTexture textureWithImage:image];
+    self.visualAtlas.filteringMode = SKTextureFilteringNearest;
+    self.firstVisualGID = [spec[@"firstgid"] integerValue];
+    self.visualMargin = [spec[@"margin"] doubleValue];
+    self.visualSpacing = [spec[@"spacing"] doubleValue];
+    self.visibleTiles = [NSMutableDictionary dictionary];
+    CCTMXTiledMap *map = (CCTMXTiledMap *)self.parent;
+    for (NSInteger row = 0; row < (NSInteger)map.mapSize.height; ++row) {
+        for (NSInteger col = 0; col < (NSInteger)map.mapSize.width; ++col) {
+            [self updateVisualTileAt:CGPointMake(col, row)];
+        }
+    }
+    // Opt-in, bounded trace: resource resolution, atlas dimensions and
+    // drawable count at the first relevant rendering boundary. Source data
+    // counts alone never prove that pixels were rendered.
+    NSArray<NSNumber *> *keys = [[self.visibleTiles allKeys]
+        sortedArrayUsingSelector:@selector(compare:)];
+    SKSpriteNode *first = keys.count ? self.visibleTiles[keys.firstObject] : nil;
+    [CCCompatTrace record:@"CCTMXLayer.visual.summary"
+        detail:[NSString stringWithFormat:
+            @"layer=%@ atlas=%@ pixels=%.0fx%.0f tile=%.0fx%.0f drawables=%lu firstPoint=%@",
+            self.layerName, filename, self.visualPixelSize.width,
+            self.visualPixelSize.height, map.tileSize.width, map.tileSize.height,
+            (unsigned long)self.visibleTiles.count,
+            first ? NSStringFromCGPoint(first.position) : @"none"]];
+}
+- (void)updateVisualTileAt:(CGPoint)coord {
+    if (!self.visualAtlas || !self.parent || !self.tileMapBox) return;
+    CCTMXTiledMap *map = (CCTMXTiledMap *)self.parent;
+    NSInteger cols = (NSInteger)map.mapSize.width;
+    NSNumber *key = @((NSInteger)coord.y * cols + (NSInteger)coord.x);
+    SKSpriteNode *old = self.visibleTiles[key];
+    [old removeFromParent];
+    [self.visibleTiles removeObjectForKey:key];
+
+    uint32_t encoded = WhaleyTileMapGID(self.tileMapBox, self.layerName.UTF8String,
+                                       (int)coord.x, (int)coord.y);
+    NSUInteger offset = (NSUInteger)((NSInteger)coord.y * cols + (NSInteger)coord.x);
+    if (self.sourceGIDs && self.sourceGIDs.length >= (offset + 1) * sizeof(uint32_t)) {
+        encoded = ((const uint32_t *)self.sourceGIDs.bytes)[offset];
+    }
+    NSInteger gid = encoded & 0x1FFFFFFF; // TMX's three flip flags
+    if (gid < self.firstVisualGID) return;
+    CGSize tile = map.tileSize;
+    CGSize sheet = self.visualPixelSize;
+    NSInteger columns = MAX(1, (NSInteger)floor((sheet.width - 2 * self.visualMargin +
+                                            self.visualSpacing) / (tile.width + self.visualSpacing)));
+    NSInteger index = gid - self.firstVisualGID;
+    CGFloat x = self.visualMargin + (index % columns) * (tile.width + self.visualSpacing);
+    CGFloat y = self.visualMargin + (index / columns) * (tile.height + self.visualSpacing);
+    if (x < 0 || y < 0 || x + tile.width > sheet.width || y + tile.height > sheet.height) return;
+    CGRect region = CGRectMake(x / sheet.width,
+                               1.0 - (y + tile.height) / sheet.height,
+                               tile.width / sheet.width, tile.height / sheet.height);
+    SKTexture *texture = [SKTexture textureWithRect:region inTexture:self.visualAtlas];
+    texture.filteringMode = self.visualAtlas.filteringMode;
+    SKSpriteNode *sprite = [SKSpriteNode spriteNodeWithTexture:texture size:tile];
+    sprite.position = CGPointMake((coord.x + 0.5) * tile.width,
+                                  (map.mapSize.height - coord.y - 0.5) * tile.height);
+    if (encoded & 0x80000000u) sprite.xScale = -1;
+    if (encoded & 0x40000000u) sprite.yScale = -1;
+    if (encoded & 0x20000000u) sprite.zRotation = (CGFloat)M_PI_2;
+    [self addChild:sprite];
+    self.visibleTiles[key] = sprite;
+}
 - (NSInteger)tileGIDAt:(CGPoint)tileCoord {
     if (!self.tileMapBox) {
         return 0;
@@ -596,6 +809,10 @@ static NSData *CCGunzip(NSData *compressed) {
         return;
     }
     WhaleyTileMapSetGID(self.tileMapBox, self.layerName.UTF8String, (int)tileCoord.x, (int)tileCoord.y, (uint32_t)MAX(0, gid));
+    // Subsequent edits must read the modified authoritative map, not the
+    // initial snapshot from the TMX document.
+    self.sourceGIDs = nil;
+    [self updateVisualTileAt:tileCoord];
 }
 - (CCSprite *)tileAt:(CGPoint)tileCoord {
     if ([self tileGIDAt:tileCoord] == 0) {
@@ -648,6 +865,23 @@ static NSData *CCGunzip(NSData *compressed) {
         [group release];
     }];
     map.compatGIDProperties = delegate.gidProperties;
+    // The Background layer, not the Meta collision layer, determines visible
+    // tiles. Retain its decoded GIDs so painting doesn't depend on the
+    // independently bridged collision/analytics tile map.
+    NSDictionary *visualSpec = delegate.visualTilesets.firstObject;
+    CCTMXLayer *background = map.compatLayers[@"Background"];
+    for (NSDictionary *entry in delegate.decodedLayers) {
+        if ([entry[@"name"] isEqualToString:@"Background"]) {
+            background.sourceGIDs = entry[@"gids"];
+            break;
+        }
+    }
+    if (visualSpec && background) {
+        [background buildVisualTiles:visualSpec];
+        [CCCompatTrace record:@"CCTMXTiledMap.visualTiles"
+            detail:[NSString stringWithFormat:@"%@: %lu sprites", file,
+                (unsigned long)background.visibleTiles.count]];
+    }
     [CCCompatTrace record:@"CCTMXTiledMap.load" detail:[NSString stringWithFormat:@"%@ %gx%g", file, map.mapSize.width, map.mapSize.height]];
     [parser release];
     [delegate release];
@@ -703,6 +937,14 @@ static NSData *CCGunzip(NSData *compressed) {
 + (instancetype)layerWithColor:(ccColor4B)c width:(CGFloat)w height:(CGFloat)h {
     CCLayerColor *l = [[[self alloc] init] autorelease];
     l.contentSize = CGSizeMake(w, h);
+    SKShapeNode *fill = [SKShapeNode shapeNodeWithRect:CGRectMake(0, 0, w, h)];
+    fill.fillColor = [UIColor colorWithRed:c.r / 255.0
+                                    green:c.g / 255.0
+                                     blue:c.b / 255.0
+                                    alpha:c.a / 255.0];
+    fill.strokeColor = UIColor.clearColor;
+    fill.lineWidth = 0;
+    [l addChild:fill];
     return l;
 }
 @end

@@ -1,0 +1,22 @@
+{
+  "gamePk": 823885,
+  "date": "2026-04-08",
+  "away": "Cincinnati Reds",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 2, "home": 1},
+  "boxscore": {
+    "away": {"E": "Singer 2 (2, pickoff, pickoff).", "PB": null},
+    "home": {"E": "Pauley (2, fielding).", "PB": null}
+  },
+  "allPlaysCount": 77,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "top", "chargedTo": "home", "fielder": "Graham Pauley", "position": "3B",
+     "kind": "fielding", "batter": "Sal Stewart", "consequence": "Stewart reached safely on the fielding error; Elly De La Cruz scored", "runScored": true},
+    {"inning": 1, "half": "bottom", "chargedTo": "away", "fielder": "Brady Singer", "position": "P",
+     "kind": "pickoff", "batter": null, "consequence": "Singer's pickoff throw to second went wild; the fetch did not say where the runner went; the at-bat later ended on a ball in play that produced a run", "runScored": false, "source": "playEvents"},
+    {"inning": 2, "half": "bottom", "chargedTo": "away", "fielder": "Brady Singer", "position": "P",
+     "kind": "pickoff", "batter": null, "consequence": "Singer's pickoff throw to first went wild; the fetch did not say where the runner went; the at-bat later ended on a ball in play that produced a run", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

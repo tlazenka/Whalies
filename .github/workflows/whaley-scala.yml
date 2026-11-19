@@ -1,0 +1,147 @@
+name: Whaley Scala ports
+
+on:
+  push:
+    branches: [develop, 'feature/whaley-scala-*', 'feature/scala-*']
+    paths:
+      - 'Scala/**'
+      - 'python/**'
+      - 'Sources/WhaleySpriteKit/Resources/**'
+      - 'Apps/Whaley2010/Resources/**'
+      - 'Dockerfile.server'
+      - 'docker-compose.yml'
+      - 'scripts/verify-whaley-ssr.sh'
+      - '.github/workflows/whaley-scala.yml'
+  pull_request:
+    paths:
+      - 'Scala/**'
+      - 'python/**'
+      - 'Sources/WhaleySpriteKit/Resources/**'
+      - 'Apps/Whaley2010/Resources/**'
+      - 'Dockerfile.server'
+      - 'docker-compose.yml'
+      - 'scripts/verify-whaley-ssr.sh'
+      - '.github/workflows/whaley-scala.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: whaley-scala-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: Scala
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install native graphics and audio dependencies
+        run: sudo apt-get update && sudo apt-get install -y clang lld libsdl2-dev libsdl2-mixer-dev libglew-dev libstb-dev libgl1-mesa-dri xvfb xauth
+      - name: Compile and test the shared core on all three runtimes
+        run: ./sbtw coreJVM/test coreJS/test coreNative/test web/stage nativeApp/stageNative server/compile
+      - name: Exercise original audio decoding and lifecycle
+        run: |
+          cc -std=c11 -Wall -Wextra -Werror tools/test_audio.c $(pkg-config --cflags --libs sdl2 SDL2_mixer) -o target/test-audio
+          ./target/test-audio target/assets
+      - name: Exercise the linked native simulation
+        run: ./target/native/whaley --headless 600
+      - name: Render and exercise the native app
+        run: xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 SDL_AUDIODRIVER=dummy ./target/native/whaley --smoke 120
+      - uses: actions/upload-artifact@v4
+        with:
+          name: whaley-web
+          path: Scala/target/web
+      - uses: actions/upload-artifact@v4
+        with:
+          name: whaley-linux-x64
+          path: Scala/target/native
+
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: Scala
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+      - name: Install SDL2, SDL_mixer, GLEW and stb with the pinned vcpkg baseline
+        run: |
+          & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" install --triplet x64-windows --x-manifest-root="$pwd" --x-install-root="$pwd/target/vcpkg"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "WHALEY_NATIVE_INCLUDE=$pwd/target/vcpkg/x64-windows/include" >> $env:GITHUB_ENV
+          "WHALEY_NATIVE_LIB=$pwd/target/vcpkg/x64-windows/lib" >> $env:GITHUB_ENV
+          "WHALEY_NATIVE_BIN=$pwd/target/vcpkg/x64-windows/bin" >> $env:GITHUB_ENV
+          "WHALEY_NATIVE_SHARE=$pwd/target/vcpkg/x64-windows/share" >> $env:GITHUB_ENV
+          "$pwd/target/vcpkg/x64-windows/bin" >> $env:GITHUB_PATH
+          "C:/Program Files/LLVM/bin" >> $env:GITHUB_PATH
+      - name: Compile and test the shared core on all three runtimes
+        run: .\sbtw.cmd coreJVM/test coreJS/test coreNative/test web/stage nativeApp/stageNative server/compile
+      - name: Exercise the linked Windows executable without requiring a GPU
+        run: .\target\native\whaley.exe --headless 600
+      - uses: actions/upload-artifact@v4
+        with:
+          name: whaley-windows-x64
+          path: Scala/target/native
+
+  server-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Play server and start PostgreSQL
+        run: docker compose up --build -d db server
+      - name: Wait for HTTP readiness
+        run: |
+          for attempt in $(seq 1 90); do
+            if curl --fail --silent http://localhost:9000/health >/dev/null; then
+              exit 0
+            fi
+            sleep 3
+          done
+          docker compose logs server db
+          exit 1
+      - name: Confirm Twirl requests were recorded by Skunk
+        run: bash scripts/verify-whaley-ssr.sh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test runner
+        working-directory: Scala
+        run: npm ci && npx playwright install --with-deps chromium
+      - name: Exercise Canvas through Play and Twirl
+        working-directory: Scala
+        run: npm test
+      - name: Inspect server logs and clean up
+        if: always()
+        run: |
+          docker compose logs server db
+          docker compose down -v

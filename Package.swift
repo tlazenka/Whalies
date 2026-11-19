@@ -27,11 +27,11 @@ let package = Package(
         .library(name: "SemanticCore", targets: ["SemanticCore"]),
         .library(name: "MuttniksStateMachines", targets: ["MuttniksStateMachines"]),
         .library(name: "CBLinearHierarchy", targets: ["CBLinearHierarchy"]),
+        .library(name: "JSONViewKit", targets: ["JSONViewKit"]),
+        .library(name: "WhaleyHost", targets: ["WhaleyHost"]),
         .library(name: "WhaleyCore", targets: ["WhaleyCore"]),
         .library(name: "WhaleyObjectiveC", targets: ["WhaleyObjectiveC"]),
         .library(name: "WhaleySpriteKit", targets: ["WhaleySpriteKit"]),
-        .executable(name: "earthquakes", targets: ["EarthquakesCLI"]),
-        .executable(name: "feed-server", targets: ["FeedServer"]),
         .executable(name: "whaley", targets: ["WhaleyCLI"]),
         .executable(name: "whaley-relay", targets: ["WhaleyRelay"]),
     ],
@@ -272,6 +272,25 @@ let package = Package(
         ),
 
         .target(name: "QueryBlaster"),
+        .target(
+            name: "JSONViewKit",
+            dependencies: [
+                "QueryBlaster", "SQLiteJSONBlaster", "SemanticCore",
+                .target(name: "ScopedUserDefaults", condition: .when(platforms: [.iOS, .macCatalyst])),
+                .target(name: "CBLinearHierarchy", condition: .when(platforms: [.iOS, .macCatalyst])),
+            ]
+        ),
+        .testTarget(
+            name: "JSONViewKitTests",
+            dependencies: [
+                "JSONViewKit", "SQLiteJSONBlaster",
+                .target(name: "CBLinearHierarchy", condition: .when(platforms: [.iOS, .macCatalyst])),
+            ]
+        ),
+        .target(
+            name: "WhaleyHost",
+            dependencies: ["WhaleyCore", "WhaleyObjectiveC", "WhaleySpriteKit"]
+        ),
         .target(name: "PostgresBlaster", dependencies: ["QueryBlaster"]),
         .target(
             name: "WhaleySpriteKit",
@@ -287,7 +306,7 @@ let package = Package(
                 .headerSearchPath("src"),
                 .unsafeFlags(["-fno-objc-arc"]),
             ],
-            linkerSettings: [.linkedFramework("SpriteKit"), .linkedFramework("UIKit"), .linkedLibrary("z")]
+            linkerSettings: [.linkedFramework("SpriteKit"), .linkedFramework("UIKit"), .linkedFramework("AVFoundation"), .linkedLibrary("z")]
         ),
         .target(
             name: "WhaleyCore",
@@ -295,32 +314,21 @@ let package = Package(
         ),
 
         .executableTarget(
-            name: "FeedServer",
-            dependencies: ["QueryBlaster", "PostgresBlaster"],
-            path: "Demos/FeedServer"
-        ),
-        .executableTarget(
             name: "WhaleyCLI",
-            dependencies: ["WhaleyCore"],
-            path: "Demos/WhaleyCLI",
+            dependencies: ["WhaleyCore", "SQLiteJSONBlaster", "MuttniksParsers"],
+            path: "Apps/WhaleyCLI",
         ),
         .executableTarget(
             name: "WhaleyRelay",
             dependencies: ["WhaleyCore"],
-            path: "Demos/WhaleyRelay",
+            path: "Apps/WhaleyRelay",
         ),
 
-        .executableTarget(
-            name: "EarthquakesCLI",
-            dependencies: ["SQLiteJSONBlaster"],
-            path: "Demos/EarthquakesCLI",
-            resources: [.copy("Resources/SampleData.json")]
-        ),
 
         .testTarget(name: "SemanticCoreTests", dependencies: ["SemanticCore"]),
         .testTarget(
             name: "SQLiteJSONBlasterTests",
-            dependencies: ["SQLiteJSONBlaster", "MuttniksParsers", "QueryBlaster"]
+            dependencies: ["SQLiteJSONBlaster", "MuttniksParsers", "QueryBlaster", "WhaleyCore"]
         ),
         .testTarget(name: "WhaleyCoreTests", dependencies: ["WhaleyCore"]),
     ],

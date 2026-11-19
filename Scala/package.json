@@ -1,0 +1,16 @@
+{
+  "name": "whaley-scala-browser-tests",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "node tools/test_web.mjs && node tools/test_web_presentation.mjs && node tools/test_web_gallery.mjs && node tools/test_web_resume.mjs && node tools/test_web_audio.mjs",
+    "test:web": "node tools/test_web.mjs && node tools/test_web_presentation.mjs && node tools/test_web_gallery.mjs && node tools/test_web_resume.mjs && node tools/test_web_audio.mjs",
+    "test:pages": "node tools/test_web_pages.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

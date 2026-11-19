@@ -1,0 +1,22 @@
+{
+  "gamePk": 823888,
+  "date": "2026-03-31",
+  "away": "Chicago White Sox",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 3, "home": 0},
+  "boxscore": {
+    "away": {"E": "Acuña 2 (2, throw, throw); Quero (2, fielding).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 70,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 4, "half": "bottom", "chargedTo": "away", "fielder": "Luisangel Acuña", "position": "CF",
+     "kind": "throwing", "batter": "Owen Caissie", "consequence": "Caissie singled and took second on the throwing error; Liam Hicks scored", "runScored": true},
+    {"inning": 4, "half": "bottom", "chargedTo": "away", "fielder": "Luisangel Acuña", "position": "CF",
+     "kind": "throwing", "batter": "Heriberto Hernández", "consequence": "Hernández singled and took second on the throwing error; Owen Caissie scored", "runScored": true},
+    {"inning": 7, "half": "bottom", "chargedTo": "away", "fielder": "Edgar Quero", "position": "C",
+     "kind": "fielding", "batter": "Graham Pauley", "consequence": "Pauley's sacrifice bunt was misplayed; Pauley ended up at first and Heriberto Hernández scored", "runScored": true}
+  ],
+  "notes": ""
+}

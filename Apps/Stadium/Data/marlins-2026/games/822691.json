@@ -1,0 +1,18 @@
+{
+  "gamePk": 822691,
+  "date": "2026-08-28",
+  "away": "Miami Marlins",
+  "home": "Washington Nationals",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Mack (7, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 71,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Joe Mack", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "on a wild pitch by Eury Perez, the catcher's throw went wild; Andres Chaparro and Jacob Young scored and CJ Abrams took second", "runScored": true, "source": "playEvents"}
+  ],
+  "notes": ""
+}

@@ -2,6 +2,19 @@
 import SpriteKit
 import WhaleyCore
 
+/// Explicit Swift linkage root for the Objective-C-to-SpriteKit C exports.
+/// The iOS app calls this before installing its game scene. The Release
+/// linker also receives -u flags for each C entry point as an archive guard.
+public enum WhaleyRuntimeBridgeLinkage {
+    @inline(never)
+    public static func ensureLinked() {
+        // A balanced, observable call into this translation unit, not a fake
+        // sprite-frame registration or a second gameplay implementation.
+        let probe = WhaleyGameActionWait(0)
+        WhaleyReleaseGameAction(probe)
+    }
+}
+
 private final class GameActionBox {
     let action: GameAction
     init(_ action: GameAction) { self.action = action }
@@ -16,27 +29,27 @@ private func action(_ pointer: UnsafeMutableRawPointer) -> GameAction {
 }
 
 @_cdecl("WhaleyGameActionMoveTo")
-func WhaleyGameActionMoveTo(_ x: Double, _ y: Double, _ seconds: Double) -> UnsafeMutableRawPointer {
+public func WhaleyGameActionMoveTo(_ x: Double, _ y: Double, _ seconds: Double) -> UnsafeMutableRawPointer {
     retain(.move(to: .init(x: x, y: y), duration: .seconds(seconds)))
 }
 
 @_cdecl("WhaleyGameActionScaleTo")
-func WhaleyGameActionScaleTo(_ scale: Double, _ seconds: Double) -> UnsafeMutableRawPointer {
+public func WhaleyGameActionScaleTo(_ scale: Double, _ seconds: Double) -> UnsafeMutableRawPointer {
     retain(.scale(to: scale, duration: .seconds(seconds)))
 }
 
 @_cdecl("WhaleyGameActionRotateBy")
-func WhaleyGameActionRotateBy(_ degrees: Double, _ seconds: Double) -> UnsafeMutableRawPointer {
+public func WhaleyGameActionRotateBy(_ degrees: Double, _ seconds: Double) -> UnsafeMutableRawPointer {
     retain(.rotate(byDegrees: degrees, duration: .seconds(seconds)))
 }
 
 @_cdecl("WhaleyGameActionWait")
-func WhaleyGameActionWait(_ seconds: Double) -> UnsafeMutableRawPointer {
+public func WhaleyGameActionWait(_ seconds: Double) -> UnsafeMutableRawPointer {
     retain(.wait(.seconds(seconds)))
 }
 
 @_cdecl("WhaleyGameActionSequence")
-func WhaleyGameActionSequence(
+public func WhaleyGameActionSequence(
     _ pointers: UnsafePointer<UnsafeMutableRawPointer?>,
     _ count: Int
 ) -> UnsafeMutableRawPointer {
@@ -51,12 +64,12 @@ func WhaleyGameActionSequence(
 }
 
 @_cdecl("WhaleyGameActionRepeatForever")
-func WhaleyGameActionRepeatForever(_ pointer: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
+public func WhaleyGameActionRepeatForever(_ pointer: UnsafeMutableRawPointer) -> UnsafeMutableRawPointer {
     retain(.repeatForever(action(pointer)))
 }
 
 @_cdecl("WhaleyGameActionAnimate")
-func WhaleyGameActionAnimate(
+public func WhaleyGameActionAnimate(
     _ frameNames: UnsafePointer<UnsafePointer<CChar>?>,
     _ count: Int,
     _ frameSeconds: Double
@@ -104,13 +117,15 @@ private final class SpriteFrameRegistry: @unchecked Sendable {
             width: f.width / f.atlasWidth,
             height: f.height / f.atlasHeight
         )
-        return SKTexture(rect: rect, in: atlas)
+        let texture = SKTexture(rect: rect, in: atlas)
+        texture.filteringMode = atlas.filteringMode
+        return texture
     }
 }
 private let spriteFrameRegistry = SpriteFrameRegistry()
 
 @_cdecl("WhaleyRegisterSpriteFrame")
-func WhaleyRegisterSpriteFrame(
+public func WhaleyRegisterSpriteFrame(
     _ name: UnsafePointer<CChar>,
     _ atlas: UnsafePointer<CChar>,
     _ x: Double,
@@ -135,12 +150,12 @@ func WhaleyRegisterSpriteFrame(
 }
 
 @_cdecl("WhaleyRegisterMissingSpriteFrame")
-func WhaleyRegisterMissingSpriteFrame(_ name: UnsafePointer<CChar>) {
+public func WhaleyRegisterMissingSpriteFrame(_ name: UnsafePointer<CChar>) {
     spriteFrameRegistry.registerMissing(String(cString: name))
 }
 
 @_cdecl("WhaleyRenderGameAction")
-func WhaleyRenderGameAction(
+public func WhaleyRenderGameAction(
     _ pointer: UnsafeMutableRawPointer,
     _ ownerNode: UnsafeMutableRawPointer?
 ) -> UnsafeMutableRawPointer {
@@ -154,12 +169,12 @@ func WhaleyRenderGameAction(
 }
 
 @_cdecl("WhaleyReleaseGameAction")
-func WhaleyReleaseGameAction(_ pointer: UnsafeMutableRawPointer) {
+public func WhaleyReleaseGameAction(_ pointer: UnsafeMutableRawPointer) {
     Unmanaged<GameActionBox>.fromOpaque(pointer).release()
 }
 
 @_cdecl("WhaleyReleaseRenderedObject")
-func WhaleyReleaseRenderedObject(_ pointer: UnsafeMutableRawPointer) {
+public func WhaleyReleaseRenderedObject(_ pointer: UnsafeMutableRawPointer) {
     Unmanaged<AnyObject>.fromOpaque(pointer).release()
 }
 
@@ -169,7 +184,7 @@ private final class TileMapBox {
 }
 
 @_cdecl("WhaleyTileMapCreate")
-func WhaleyTileMapCreate(
+public func WhaleyTileMapCreate(
     _ width: Int32,
     _ height: Int32,
     _ tileWidth: Double,
@@ -184,7 +199,7 @@ func WhaleyTileMapCreate(
 }
 
 @_cdecl("WhaleyTileMapSetLayer")
-func WhaleyTileMapSetLayer(
+public func WhaleyTileMapSetLayer(
     _ pointer: UnsafeMutableRawPointer,
     _ name: UnsafePointer<CChar>,
     _ gids: UnsafePointer<UInt32>,
@@ -202,7 +217,7 @@ func WhaleyTileMapSetLayer(
 }
 
 @_cdecl("WhaleyTileMapGID")
-func WhaleyTileMapGID(
+public func WhaleyTileMapGID(
     _ pointer: UnsafeMutableRawPointer,
     _ layer: UnsafePointer<CChar>,
     _ column: Int32,
@@ -216,7 +231,7 @@ func WhaleyTileMapGID(
 }
 
 @_cdecl("WhaleyTileMapSetGID")
-func WhaleyTileMapSetGID(
+public func WhaleyTileMapSetGID(
     _ pointer: UnsafeMutableRawPointer,
     _ layer: UnsafePointer<CChar>,
     _ column: Int32,
@@ -231,7 +246,7 @@ func WhaleyTileMapSetGID(
 }
 
 @_cdecl("WhaleyReleaseTileMap")
-func WhaleyReleaseTileMap(_ pointer: UnsafeMutableRawPointer) {
+public func WhaleyReleaseTileMap(_ pointer: UnsafeMutableRawPointer) {
     Unmanaged<TileMapBox>.fromOpaque(pointer).release()
 }
 
@@ -240,7 +255,7 @@ public func WhaleyGameActionFade(_ durationSeconds: Double, _ opacity: Double) -
     retain(.fade(toOpacity: opacity, duration: .seconds(durationSeconds)))
 }
 
-typealias ActionCallback = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutableRawPointer?) -> Void
+public typealias ActionCallback = @convention(c) (UnsafeMutableRawPointer?, UnsafeMutableRawPointer?) -> Void
 private struct RegisteredActionCallback {
     let context: UnsafeMutableRawPointer?
     let function: ActionCallback
@@ -270,12 +285,12 @@ private final class ActionCallbackRegistry: @unchecked Sendable {
 private let actionCallbackRegistry = ActionCallbackRegistry()
 
 @_cdecl("WhaleyRegisterActionCallback")
-func WhaleyRegisterActionCallback(_ context: UnsafeMutableRawPointer?, _ function: ActionCallback) -> UInt64 {
+public func WhaleyRegisterActionCallback(_ context: UnsafeMutableRawPointer?, _ function: ActionCallback) -> UInt64 {
     actionCallbackRegistry.register(context: context, function: function)
 }
 
 @_cdecl("WhaleyGameActionCallback")
-func WhaleyGameActionCallback(_ id: UInt64) -> UnsafeMutableRawPointer { retain(.callback(id)) }
+public func WhaleyGameActionCallback(_ id: UInt64) -> UnsafeMutableRawPointer { retain(.callback(id)) }
 
 private func invokeActionCallback(_ id: UInt64, node: SKNode) {
     guard let entry = actionCallbackRegistry.entry(for: id) else { return }
@@ -291,10 +306,10 @@ private final class SchedulerBox {
 }
 
 @_cdecl("WhaleySchedulerCreate")
-func WhaleySchedulerCreate() -> UnsafeMutableRawPointer { Unmanaged.passRetained(SchedulerBox()).toOpaque() }
+public func WhaleySchedulerCreate() -> UnsafeMutableRawPointer { Unmanaged.passRetained(SchedulerBox()).toOpaque() }
 
 @_cdecl("WhaleySchedulerSchedule")
-func WhaleySchedulerSchedule(
+public func WhaleySchedulerSchedule(
     _ pointer: UnsafeMutableRawPointer,
     _ interval: Double,
     _ context: UnsafeMutableRawPointer?,
@@ -310,7 +325,7 @@ func WhaleySchedulerSchedule(
 }
 
 @_cdecl("WhaleySchedulerCancel")
-func WhaleySchedulerCancel(_ pointer: UnsafeMutableRawPointer, _ rawID: UInt64) {
+public func WhaleySchedulerCancel(_ pointer: UnsafeMutableRawPointer, _ rawID: UInt64) {
     let box = Unmanaged<SchedulerBox>.fromOpaque(pointer).takeUnretainedValue()
     let id = GameScheduleID(rawValue: rawID)
     box.scheduler.cancel(id)
@@ -318,7 +333,7 @@ func WhaleySchedulerCancel(_ pointer: UnsafeMutableRawPointer, _ rawID: UInt64) 
 }
 
 @_cdecl("WhaleySchedulerAdvance")
-func WhaleySchedulerAdvance(_ pointer: UnsafeMutableRawPointer, _ delta: Double) {
+public func WhaleySchedulerAdvance(_ pointer: UnsafeMutableRawPointer, _ delta: Double) {
     let box = Unmanaged<SchedulerBox>.fromOpaque(pointer).takeUnretainedValue()
     for token in box.scheduler.advance(by: .seconds(delta)) {
         if let (function, context, interval) = box.callbacks[token] { function(context, interval) }
@@ -326,7 +341,7 @@ func WhaleySchedulerAdvance(_ pointer: UnsafeMutableRawPointer, _ delta: Double)
 }
 
 @_cdecl("WhaleyReleaseScheduler")
-func WhaleyReleaseScheduler(_ pointer: UnsafeMutableRawPointer) {
+public func WhaleyReleaseScheduler(_ pointer: UnsafeMutableRawPointer) {
     Unmanaged<SchedulerBox>.fromOpaque(pointer).release()
 }
 #endif

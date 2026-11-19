@@ -1,0 +1,18 @@
+{
+  "gamePk": 823247,
+  "date": "2026-09-20",
+  "away": "Miami Marlins",
+  "home": "San Diego Padres",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Sanoja (13, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 68,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 4, "half": "bottom", "chargedTo": "away", "fielder": "Javier Sanoja", "position": "2B",
+     "kind": "throwing", "batter": "Jackson Merrill", "consequence": "Merrill singled on a ball deflected by pitcher Alcantara and went to third on the throwing error; nobody else on base", "runScored": false}
+  ],
+  "notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "gamePk": 823230,
+  "date": "2026-04-26",
+  "away": "Miami Marlins",
+  "home": "San Francisco Giants",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Lopez, O (5, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 68,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "throwing", "batter": "Luis Arraez", "consequence": "Force out at second (Chapman retired) with a throwing error by Lopez; Jung Hoo Lee scored from third; whether Arraez was safe is not stated", "runScored": true}
+  ],
+  "notes": ""
+}

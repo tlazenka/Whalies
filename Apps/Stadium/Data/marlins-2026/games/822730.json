@@ -1,0 +1,18 @@
+{
+  "gamePk": 822730,
+  "date": "2026-06-01",
+  "away": "Miami Marlins",
+  "home": "Washington Nationals",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Lopez, O (8, throw).", "PB": null},
+    "home": {"E": null, "PB": "Ruiz, K (3)."}
+  },
+  "allPlaysCount": 76,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "throwing", "batter": "James Wood", "consequence": "Wood singled on a grounder and advanced to second on the throwing error", "runScored": false}
+  ],
+  "notes": ""
+}

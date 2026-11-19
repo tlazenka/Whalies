@@ -1,0 +1,11 @@
+{
+  "name": "whaley-scala-native",
+  "version-string": "0.1.0",
+  "builtin-baseline": "eef0ef7bf4b2c0ddbf7be1a776f1bede94dfc861",
+  "dependencies": [
+    "sdl2",
+    { "name": "sdl2-mixer", "default-features": false, "features": ["mpg123"] },
+    "glew",
+    "stb"
+  ]
+}

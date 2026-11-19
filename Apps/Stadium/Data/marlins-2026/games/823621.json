@@ -1,0 +1,20 @@
+{
+  "gamePk": 823621,
+  "date": "2026-05-31",
+  "away": "Miami Marlins",
+  "home": "New York Mets",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Hernández, H (1, fielding).", "PB": null},
+    "home": {"E": "Bichette (7, fielding).", "PB": null}
+  },
+  "allPlaysCount": 78,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 6, "half": "top", "chargedTo": "home", "fielder": "Bo Bichette", "position": "SS",
+     "kind": "fielding", "batter": "Jakob Marsee", "consequence": "Marsee reached base on the fielding error", "runScored": false},
+    {"inning": 7, "half": "bottom", "chargedTo": "away", "fielder": "Heriberto Hernández", "position": "LF",
+     "kind": "fielding", "batter": "Luis Torrens", "consequence": "Torrens singled; Semien advanced from second to third on the left fielder's error", "runScored": false}
+  ],
+  "notes": ""
+}

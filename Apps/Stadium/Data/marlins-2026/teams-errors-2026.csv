@@ -1,0 +1,32 @@
+rank,team,errors,fieldingPct
+1,San Francisco Giants,108,.982
+2,Washington Nationals,106,.982
+3,Miami Marlins,101,.982
+4,Colorado Rockies,100,.983
+5,Toronto Blue Jays,98,.983
+6,Pittsburgh Pirates,97,.983
+7,New York Yankees,97,.983
+8,Baltimore Orioles,96,.983
+9,New York Mets,94,.983
+10,Tampa Bay Rays,92,.984
+11,Los Angeles Angels,91,.984
+12,Cincinnati Reds,89,.984
+13,Seattle Mariners,88,.985
+14,Cleveland Guardians,84,.985
+15,Boston Red Sox,82,.986
+16,Chicago White Sox,82,.986
+17,St. Louis Cardinals,80,.986
+18,Philadelphia Phillies,80,.986
+19,Kansas City Royals,78,.987
+20,Detroit Tigers,77,.987
+21,Athletics,75,.987
+22,Minnesota Twins,73,.987
+23,Houston Astros,73,.987
+24,Milwaukee Brewers,72,.987
+25,Texas Rangers,68,.988
+26,Atlanta Braves,65,.989
+27,San Diego Padres,64,.989
+28,Arizona Diamondbacks,64,.989
+29,Los Angeles Dodgers,64,.989
+30,Chicago Cubs,61,.990
+

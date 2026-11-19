@@ -1,0 +1,18 @@
+{
+  "gamePk": 822690,
+  "date": "2026-08-29",
+  "away": "Miami Marlins",
+  "home": "Washington Nationals",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Mack (8, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 83,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Joe Mack", "position": "C",
+     "kind": "throwing", "batter": "Dylan Crews", "consequence": "Crews singled on a soft grounder and took second on the throwing error; Jose Tena and Daylen Lile scored", "runScored": true}
+  ],
+  "notes": ""
+}

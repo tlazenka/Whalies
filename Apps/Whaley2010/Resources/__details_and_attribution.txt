@@ -1,0 +1,280 @@
+
+=================== FREESOUND ATTRIBUTION FORM =======================
+
+This form below lists all the samples in this pack with their descriptions and tags.
+You can use this form to attribute samples to users when you use them.
+
+=========================== CUT HERE =================================
+
+File:
+	Name: "anvil-long.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=18931
+	Date of upload: 2006-05-15 08:25:40
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : An anvil/metal on metal sound created by resampling and adding lots of EQ (dynamic and static) and some reverb to Incarnadine\'s oom 1 sample. This "long" version also has added compression.
+
+Tags:
+	anvil bright hard industrial metal metallic percussion processed 
+======================================================================
+
+File:
+	Name: "anvil-short.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=18932
+	Date of upload: 2006-05-15 08:25:42
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : An anvil/metal on metal sound created by resampling and adding lots of EQ (dynamic and static) and some reverb to Incarnadine\'s oom 1 sample.
+
+Tags:
+	anvil bright hard industrial metal metallic percussion processed 
+======================================================================
+
+File:
+	Name: "anvil draw 1.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19008
+	Date of upload: 2006-05-15 08:37:17
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a sword/steel bar drawn across an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time.
+
+Tags:
+	anvil metal processed 
+======================================================================
+
+File:
+	Name: "anvil draw 2.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19009
+	Date of upload: 2006-05-15 08:37:21
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a sword/steel bar drawn across an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time.
+
+Tags:
+	anvil metal processed 
+======================================================================
+
+File:
+	Name: "anvil draw 3.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19010
+	Date of upload: 2006-05-15 08:37:22
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a sword/steel bar drawn across an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time.
+
+Tags:
+	anvil metal processed 
+======================================================================
+
+File:
+	Name: "anvil draw long 1.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19011
+	Date of upload: 2006-05-15 08:37:27
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a sword/steel bar drawn across an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time. This sample is a little longer than the others.
+
+Tags:
+	anvil metal processed 
+======================================================================
+
+File:
+	Name: "anvil draw long 2.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19012
+	Date of upload: 2006-05-15 08:37:29
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a sword/steel bar drawn across an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time. This sample is a little longer than the others.
+
+Tags:
+	anvil metal processed 
+======================================================================
+
+File:
+	Name: "anvil strike 1.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19013
+	Date of upload: 2006-05-15 08:37:31
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a hammer striking an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time.
+
+Tags:
+	anvil hard hit processed strike 
+======================================================================
+
+File:
+	Name: "anvil strike 2.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19014
+	Date of upload: 2006-05-15 08:37:32
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a hammer striking an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time.
+
+Tags:
+	anvil hard hit processed strike 
+======================================================================
+
+File:
+	Name: "anvil strike 3.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19015
+	Date of upload: 2006-05-15 08:37:34
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a hammer striking an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time.
+
+Tags:
+	anvil hard hit processed strike 
+======================================================================
+
+File:
+	Name: "anvil strike 4.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19016
+	Date of upload: 2006-05-15 08:37:35
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a hammer striking an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time.
+
+Tags:
+	anvil hard hit processed strike 
+======================================================================
+
+File:
+	Name: "anvil strike 5.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19017
+	Date of upload: 2006-05-15 08:37:37
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a hammer striking an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time.
+
+Tags:
+	anvil hard hit processed strike 
+======================================================================
+
+File:
+	Name: "anvil strike 6.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19018
+	Date of upload: 2006-05-15 08:37:41
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a hammer striking an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time.
+
+Tags:
+	anvil hard hit processed strike 
+======================================================================
+
+File:
+	Name: "anvil strike 7.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19019
+	Date of upload: 2006-05-15 08:37:45
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a hammer striking an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time.
+
+Tags:
+	anvil hard hit processed strike 
+======================================================================
+
+File:
+	Name: "anvil strike 8.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19020
+	Date of upload: 2006-05-15 08:37:48
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a hammer striking an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time.
+
+Tags:
+	anvil hard hit processed strike 
+======================================================================
+
+File:
+	Name: "anvil strike weak 1.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19021
+	Date of upload: 2006-05-15 08:37:50
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a hammer striking an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time. This sample is a little softer than the others.
+
+Tags:
+	anvil hard hit processed strike 
+======================================================================
+
+File:
+	Name: "anvil strike weak 2.wav"
+	Url: http://www.freesound.org/samplesViewSingle.php?id=19022
+	Date of upload: 2006-05-15 08:37:52
+	
+Designer / Creator / Uploader:
+	Name: "l0calh05t"
+	Url: http://www.freesound.org/usersViewSingle.php?id=50162
+	
+Description:
+	By "l0calh05t" : The sound of what I imagine a hammer striking an anvil would probably make. This was created by hitting two knives together and resampling it for a lower pitch. Because I only sampled at 44,100 Hz, most high frequency information is gone. I might make these again recording at 192 kHz if I find the time. This sample is a little softer than the others.
+
+Tags:
+	anvil hard hit processed strike 
+======================================================================
+

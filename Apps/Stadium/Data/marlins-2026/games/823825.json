@@ -1,0 +1,24 @@
+{
+  "gamePk": 823825,
+  "date": "2026-08-26",
+  "away": "Boston Red Sox",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 4, "home": 0},
+  "boxscore": {
+    "away": {"E": "Sogard 2 (3, throw, fielding); Wong 2 (4, throw, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 74,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "bottom", "chargedTo": "away", "fielder": "Nick Sogard", "position": "1B",
+     "kind": "throwing", "batter": "Griffin Conine", "consequence": "Conine grounded out to first; a throwing error by Sogard was noted on the play; fetch did not say whether a runner advanced", "runScored": false},
+    {"inning": 8, "half": "bottom", "chargedTo": "away", "fielder": "Nick Sogard", "position": "1B",
+     "kind": "fielding", "batter": "Owen Caissie", "consequence": "Caissie reached on the error and advanced to second; Otto Lopez scored", "runScored": true},
+    {"inning": 2, "half": "bottom", "chargedTo": "away", "fielder": "Connor Wong", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "Otto Lopez stole second and scored on the catcher's throwing error", "runScored": true, "source": "playEvents"},
+    {"inning": 8, "half": "bottom", "chargedTo": "away", "fielder": "Connor Wong", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "Otto Lopez stole second and took third on the catcher's throwing error", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

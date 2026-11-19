@@ -1,0 +1,18 @@
+{
+  "gamePk": 823867,
+  "date": "2026-05-18",
+  "away": "Atlanta Braves",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Kim, Ha (2, fielding).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 77,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 2, "half": "bottom", "chargedTo": "away", "fielder": "Ha-Seong Kim", "position": "SS",
+     "kind": "fielding", "batter": "Jakob Marsee", "consequence": "Marsee reached first on the fielding error; the call at first was challenged and stood", "runScored": false}
+  ],
+  "notes": ""
+}

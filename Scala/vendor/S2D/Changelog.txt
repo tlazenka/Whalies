@@ -1,0 +1,162 @@
+S2D Changelog File.
+In this file you can find the changes made to every version of the library.
+
+06/2026:
+v_0.2.1:
+- removed setShaderValue(Ptr[Byte], Int).
+- removed setShaderValueV.
+- removed setShaderValueMatrix.
+- added typed setShaderValue overloads for Float, Int, Vector2, Color, Texture2D.
+- added setShaderValue(x, y, z) and setShaderValue(x, y, z, w) overloads for vec3/vec4.
+
+06/2026:
+v_0.2.0:
+- added stb_truetype.h to stb_impl.c.
+- added stb_truetype bindings (stbtt_BakeFontBitmap, stbtt_GetBakedQuad, stbtt_bakedchar, stbtt_aligned_quad).
+- added FontType opaque type.
+- added load and unload functions to Font.
+- added FontRenderer. VAO/VBO setup, per-frame glyph quad batching, alpha blending.
+- added Text.draw. renders a string at a given position with a given font and color.
+- added Text.measure. returns the bounding Vector2 of a string for a given font.
+
+06/2026:
+v_0.1.9-SNAPSHOT:
+- made COLOR an opaque type. Zero allocation with packed RGBA.
+- color now clamps values instead of throwing an error.
+
+05/2026 - 06/2026
+v_0.1.8-SNAPSHOT:
+- fixed a bug on Timing.scala file where FPS were spiking to INT.MAXSIZE
+- added waitForTargetFPS and setTargetFPS functions on Timing.scala.
+- implemented a batch renderer in BasicRenderer. every shape using default-shader gets accumulated into one single vertex buffer.
+- removed all the per-draw allocations (scala array and arraybuffer). replaced it with pre-allocations, using a scratch buffer.
+- removed every "Zone" block from renderers. no more stack allocations.
+- removed all "for" loops from the code. replaced them with while loops for better performance.
+- glVertexAttribPointer and glEnableVertexAttribArray called once on initialize instead of per-draw. saves state on VAO.
+- glUseProgram now uses a state tracking logic. removed logic that was unnecesarily switching programs for every call.
+- glGetUniformLocation now uses a cache logic for custom shaders (beginShader).
+- projection matrix gets computed once per frame and stored in a pre-allocated pointer. it is now shared across all renderers.
+- beginCamera/endCamera had a bug when using custom shaders. fixed this and now camera correctly sends data to projection matrix.
+- removed hardcoded "36" segments value from circle rendering. now radius is automatically calculated.
+- removed every try/catch block inside texture renderer.
+- added 2 new functions to Vector2 (withX and withY). the goal is to be able to create a modified copy without allocating intermediate values.
+
+06/2025
+v_0.1.7-SNAPSHOT:
+- created Shaders.scala file.
+- started adding shader functions to Shaders.scala.
+- fixed description on build.sbt file.
+- added Shaders.scala to the core package.
+- added shader functions to Shaders.scala.
+- moved all the shader functionality from GL to GLEWHelper.
+- shaders are working for 120 compatibility profile.
+- added BasicRenderer file.
+- added TextureRenderer file.
+- added math package with Matrix4 file inside.
+- updated Basics.scala to use GL 330 core instead of 120 comp.
+- updated Textures.scala to use GL 330 core instead of 120 comp.
+- fixed Shaders.scala, now it works with 330 core.
+- tested all the functions in Basics.scala and Textures.scala with 330 core.
+- fixed wrong formatting on readme file.
+- s2d-cli available on coursier --contrib.
+- updated Drawing and Window files to use CORE instead of COMPATIBILITY profile.
+- shapes and textures now use a default shader.
+- custom shaders are working for 330 core.
+- reorganized project, added backend package and put all the bindings inside.
+- added Input package.
+- added first implementation of Screen Space functions.
+- added examples folder.
+- started creating some examples as a way of documentation, taking from raylib.
+
+v_0.1.6-SNAPSHOT:
+- started the migration of the textures package.
+- added all the different load textures functions to Textures.scala.
+- added unload function to Textures.scala, necessary to free textures.
+- added update and updateRec to Textures.scala.
+- added GLEW bindings to gl package.
+- updated Window.scala (create function) to use GLEW.
+- updated load functions in Textures.scala to use GLEWHelper.
+- added assets folder to sandbox project.
+- updated build.bat in sandbox project to link GLEW.
+- added CONTRIBUTING.md file. Used to explain how to contribute to the project with the correct binaries and libraries.
+- updated README.md file with new information about how to build and run the library.
+- updated README.md, specified where to download dll and binaries.
+- manually placed the glew32.dll and sdl2.dll files in the sandbox root folder. THIS SHOULD BE CHANGED.
+- updated LIBRARY_EXPANSION.txt file, added new goal for the scala migration about the current state of project setup.
+- created a small CLI application as the main project creation tool.
+- updated README.md file with the new project creation step by step.
+- changed from Scala-CLI to SBT as the main build system.
+
+v_0.1.5-SNAPSHOT:
+- changed load and loadRaw to use STB instead of SDL2_Image.
+- added unload function to Images.scala, necessary to free images.
+- added loadAnim, loadAnimFromMemory functions to Images.scala.
+- added loadFromMemory function to Images.scala.
+- added loadFromTexture funtion to Images.scala.
+- added loadFromScreen function to Images.scala.
+- added isValid function to Images.scala.
+- modified unload function (added exception).
+- added getChannelCount and getBytesPerPixel functions to Images.scala.
+- finished the migration of Images.scala.
+
+v_0.1.4-SNAPSHOT:
+- Refactored the entire structure of the project
+- added stb bindings.
+
+v_0.1.3-SNAPSHOT:
+- Added new SDL_Image and SDL_ImageExtras files.
+- Updated project.scala file.
+
+v_0.1.2-SNAPSHOT:
+- Finished core package migration (Cursor, Window & Drawing)
+- Finished shapes package migration (Setup & Basics)
+- Started textures package migration.
+- Updated readme information with scala native configurations.
+- Renamed gl/Extras.scala to gl/GLExtras.scala.
+- Added Code of Conduct file.
+- Switched from IntelliJ to Focus. Added build.bat to run with Wezterm.
+
+v_1.0.1:
+- Started the migration of the backend from Scala JVM to Scala Native.
+- Added core module with Window, Cursor and Drawing classes.
+- Added empty shapes and textures packages.
+- Added types package with BlendMode, Camera2D, Color, Image, RenderTexture2D, Shader, Texture2D, Vector2, WindowFlag classes.
+- Added sdl2 package with SDL2 bindings for Scala Native.
+- Added gl package with OpenGL bindings for Scala Native.
+- Switched from sbt to Scala-CLI for the main building system.
+- Re-added Readme, LICENSE, changelog and library expansion files to the repository.
+- Setup ScalaFMT for code formatting.
+
+v_1.0.0:
+- Refactored the structure of the library, the usage is now "ClassName.functionName"
+- Support for basic window management (create, close, fullscreen, focus, etc)
+- Support for 2D shapes rendering (rectangles, triangles, circles, etc)
+- Support for image loading and texture rendering.
+- Basic 2D camera system with zoom, rotation and offset.
+- Current Packages:
+ -- Core Package
+    S2D.core.Window
+    S2D.core.Cursor
+    S2D.core.Drawing
+
+ -- Shapes Package*
+    S2D.shapes.Basics
+    S2D.shapes.Setup
+
+ -- Textures Package*
+    S2D.textures.Images
+    S2D.textures.Textures
+
+ -- Types Package*
+    S2D.types.BlendMode
+    S2D.types.Camera2D
+    S2D.types.Color
+    S2D.types.Image
+    S2D.types.KeyCode
+    S2D.types.PixelFormat
+    S2D.types.Rectangle
+    S2D.types.RenderTexture2D
+    S2D.types.Shader
+    S2D.types.Texture2D
+    S2D.types.Vector2
+    S2D.types.WindowFlag

@@ -1,0 +1,20 @@
+{
+  "gamePk": 823878,
+  "date": "2026-04-22",
+  "away": "St. Louis Cardinals",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Urías, R (3, fielding).", "PB": null},
+    "home": {"E": "Sanoja (3, fielding).", "PB": null}
+  },
+  "allPlaysCount": 71,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 2, "half": "top", "chargedTo": "home", "fielder": "Javier Sanoja", "position": "3B",
+     "kind": "fielding", "batter": "Ramón Urías", "consequence": "Urías reached base on the error; he was later forced out at second on a double play", "runScored": false},
+    {"inning": 8, "half": "bottom", "chargedTo": "away", "fielder": "Ramón Urías", "position": "1B",
+     "kind": "fielding", "batter": "Graham Pauley", "consequence": "Pauley reached on a fielder's choice; Heriberto Hernández went from first to second on the error", "runScored": false}
+  ],
+  "notes": ""
+}

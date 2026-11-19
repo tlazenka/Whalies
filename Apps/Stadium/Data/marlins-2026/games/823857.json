@@ -1,0 +1,18 @@
+{
+  "gamePk": 823857,
+  "date": "2026-06-07",
+  "away": "Tampa Bay Rays",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Feduccia (3, fielding).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 67,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 7, "half": "bottom", "chargedTo": "away", "fielder": "Hunter Feduccia", "position": "C",
+     "kind": "fielding", "batter": "Joe Mack", "consequence": "Mack reached on a fielder's choice with the error; Ruiz and Marsee both scored", "runScored": true}
+  ],
+  "notes": ""
+}

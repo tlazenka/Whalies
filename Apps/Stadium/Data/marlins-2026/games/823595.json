@@ -1,0 +1,20 @@
+{
+  "gamePk": 823595,
+  "date": "2026-07-30",
+  "away": "Miami Marlins",
+  "home": "New York Mets",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Pauley (3, fielding).", "PB": null},
+    "home": {"E": "McLean (3, pickoff).", "PB": "Alvarez, F (9)."}
+  },
+  "allPlaysCount": 69,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 6, "half": "bottom", "chargedTo": "away", "fielder": "Graham Pauley", "position": "3B",
+     "kind": "fielding", "batter": "Luis Robert Jr.", "consequence": "Robert reached first on a grounder; Bichette went to second and Lindor scored from third", "runScored": true},
+    {"inning": 3, "half": "top", "chargedTo": "home", "fielder": "Nolan McLean", "position": "P",
+     "kind": "pickoff", "batter": null, "consequence": "pickoff throw to first was an error; the fetch did not name the runner or say whether he advanced", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

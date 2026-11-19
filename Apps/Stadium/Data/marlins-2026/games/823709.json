@@ -1,0 +1,18 @@
+{
+  "gamePk": 823709,
+  "date": "2026-05-14",
+  "away": "Miami Marlins",
+  "home": "Minnesota Twins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Faucher (1, pickoff).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 72,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Calvin Faucher", "position": "P",
+     "kind": "pickoff", "batter": null, "consequence": "pickoff throw to first was an error; the fetch did not say which runner advanced; the plate appearance later ended with a ball in play that scored a run", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

@@ -1,6 +1,9 @@
 #if canImport(SpriteKit)
 import SpriteKit
 import WhaleyCore
+#if canImport(UIKit)
+import WhaleyObjectiveC
+#endif
 
 public enum SpriteKitGameAction {
     public static func interpret(
@@ -20,7 +23,29 @@ public enum SpriteKitGameAction {
         case let .fade(opacity, duration):
             return .fadeAlpha(to: opacity, duration: seconds(duration))
         case let .animate(frameNames, frameDuration):
-            return .animate(with: frameNames.map(texture), timePerFrame: seconds(frameDuration))
+            guard let timeline = SpriteFrameTimeline(count: frameNames.count,
+                                                     interval: seconds(frameDuration)) else {
+                return .wait(forDuration: 0)
+            }
+            // Fallback textures serve plain SKSpriteNode clients. CCSprite
+            // resolves its COMPLETE descriptor from the existing Obj-C cache.
+            let frames = frameNames.map(texture)
+            return .customAction(withDuration: timeline.duration) { node, elapsed in
+                let index = timeline.index(at: Double(elapsed))
+                #if canImport(UIKit)
+                if let owner = node as? WhaleySpriteFrameTarget {
+                    _ = owner.applyWhaleyFrame(named: frameNames[index])
+                    return
+                }
+                #endif
+                // Never select a seemingly suitable child of an arbitrary
+                // wrapper. Only an explicit frame target or actual sprite
+                // accepts frame changes; movement/callbacks stay on node.
+                if let drawable = node as? SKSpriteNode {
+                    drawable.texture = frames[index]
+                    drawable.size = frames[index].size()
+                }
+            }
         case let .sequence(actions):
             return .sequence(actions.map { interpret($0, callback: callback, texture: texture) })
         case let .repeatForever(action):

@@ -1,0 +1,24 @@
+{
+  "gamePk": 823884,
+  "date": "2026-04-09",
+  "away": "Cincinnati Reds",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 2, "home": 2},
+  "boxscore": {
+    "away": {"E": "Suárez, E (1, fielding); Franco, J (1, throw).", "PB": null},
+    "home": {"E": "Lopez, O (4, fielding); Edwards, X (1, fielding).", "PB": null}
+  },
+  "allPlaysCount": 79,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "bottom", "chargedTo": "away", "fielder": "Eugenio Suárez", "position": "3B",
+     "kind": "fielding", "batter": "Agustín Ramírez", "consequence": "Ramírez reached on a fielder's choice with a fielding error; Xavier Edwards scored", "runScored": true},
+    {"inning": 2, "half": "top", "chargedTo": "home", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "fielding", "batter": "Dane Myers", "consequence": "Myers reached base on the fielding error", "runScored": false},
+    {"inning": 7, "half": "bottom", "chargedTo": "away", "fielder": "Jose Franco", "position": "P",
+     "kind": "throwing", "batter": "Liam Hicks", "consequence": "Hicks reached on a fielder's choice; Xavier Edwards was thrown out at home and Agustín Ramírez went first to second on the throwing error", "runScored": false},
+    {"inning": 6, "half": "top", "chargedTo": "home", "fielder": "Xavier Edwards", "position": "2B",
+     "kind": "pickoff", "batter": null, "consequence": "error by Edwards on a pickoff attempt at second; the fetch did not say whether the runner advanced, and the at-bat ended in an out", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

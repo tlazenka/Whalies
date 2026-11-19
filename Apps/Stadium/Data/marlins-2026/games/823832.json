@@ -1,0 +1,20 @@
+{
+  "gamePk": 823832,
+  "date": "2026-08-11",
+  "away": "Pittsburgh Pirates",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 2, "home": 0},
+  "boxscore": {
+    "away": {"E": "Gonzalez, J (1, throw); Gonzales, N (11, fielding).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 62,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 5, "half": "bottom", "chargedTo": "away", "fielder": "Jacob Gonzalez", "position": "SS",
+     "kind": "throwing", "batter": "Xavier Edwards", "consequence": "Edwards singled on a grounder to short and took second on Gonzalez's throwing error; Ruiz scored", "runScored": true},
+    {"inning": 6, "half": "bottom", "chargedTo": "away", "fielder": "Nick Gonzales", "position": "3B",
+     "kind": "fielding", "batter": "Heriberto Hernández", "consequence": "Hernández reached on Gonzales's fielding error with nobody on", "runScored": false}
+  ],
+  "notes": ""
+}

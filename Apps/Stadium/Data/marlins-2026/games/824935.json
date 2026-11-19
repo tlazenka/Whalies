@@ -1,0 +1,18 @@
+{
+  "gamePk": 824935,
+  "date": "2026-04-14",
+  "away": "Miami Marlins",
+  "home": "Atlanta Braves",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": "Ramírez (3)."},
+    "home": {"E": "Baldwin, D (1, throw).", "PB": null}
+  },
+  "allPlaysCount": 71,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "top", "chargedTo": "home", "fielder": "Drake Baldwin", "position": "C",
+     "kind": "throwing", "batter": "Xavier Edwards", "consequence": "Edwards walked; the throwing error let Jakob Marsee advance from second to third", "runScored": false}
+  ],
+  "notes": ""
+}

@@ -1,0 +1,20 @@
+{
+  "gamePk": 823623,
+  "date": "2026-05-29",
+  "away": "Miami Marlins",
+  "home": "New York Mets",
+  "linescoreErrors": {"away": 2, "home": 0},
+  "boxscore": {
+    "away": {"E": "Stowers (2, fielding); Mack (3, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 84,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 4, "half": "bottom", "chargedTo": "away", "fielder": "Kyle Stowers", "position": "LF",
+     "kind": "fielding", "batter": "Marcus Semien", "consequence": "Semien singled sharply to left and advanced to second on the fielding error", "runScored": false},
+    {"inning": 4, "half": "bottom", "chargedTo": "away", "fielder": "Joe Mack", "position": "C",
+     "kind": "throwing", "batter": "Luis Torrens", "consequence": "Torrens out on a sacrifice bunt to the catcher; Semien scored from second on the throwing error", "runScored": true}
+  ],
+  "notes": ""
+}

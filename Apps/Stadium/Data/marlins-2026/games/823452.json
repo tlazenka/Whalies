@@ -1,0 +1,18 @@
+{
+  "gamePk": 823452,
+  "date": "2026-06-15",
+  "away": "Miami Marlins",
+  "home": "Philadelphia Phillies",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Sosa, E (4, throw).", "PB": null}
+  },
+  "allPlaysCount": 75,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 8, "half": "top", "chargedTo": "home", "fielder": "Edmundo Sosa", "position": "SS",
+     "kind": "throwing", "batter": "Javier Sanoja", "consequence": "Sanoja reached base on the throwing error; Phillies challenged the call at first, which was upheld", "runScored": false}
+  ],
+  "notes": ""
+}

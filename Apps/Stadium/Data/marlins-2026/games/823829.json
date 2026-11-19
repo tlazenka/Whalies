@@ -1,0 +1,18 @@
+{
+  "gamePk": 823829,
+  "date": "2026-08-13",
+  "away": "Pittsburgh Pirates",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Gonzalez, J (2, fielding).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 77,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Jacob Gonzalez", "position": "SS",
+     "kind": "fielding", "batter": "Javier Sanoja", "consequence": "Sanoja reached on Gonzalez's fielding error", "runScored": false}
+  ],
+  "notes": ""
+}

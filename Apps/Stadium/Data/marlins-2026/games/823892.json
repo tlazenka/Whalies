@@ -1,0 +1,20 @@
+{
+  "gamePk": 823892,
+  "date": "2026-03-28",
+  "away": "Colorado Rockies",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Goodman (1, throw).", "PB": null},
+    "home": {"E": "Pérez, Eu (1, pickoff).", "PB": null}
+  },
+  "allPlaysCount": 70,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 5, "half": "top", "chargedTo": "home", "fielder": "Eury Pérez", "position": "P",
+     "kind": "pickoff", "batter": null, "consequence": "Pérez's pickoff throw to second went for a throwing error; the fetch did not say whether the runner advanced, and the at-bat ended in an out", "runScored": false, "source": "playEvents"},
+    {"inning": 8, "half": "bottom", "chargedTo": "away", "fielder": "Hunter Goodman", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "Griffin Conine stole second and went on to third on the catcher's throwing error", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

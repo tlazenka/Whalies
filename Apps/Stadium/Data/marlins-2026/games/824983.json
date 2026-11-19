@@ -1,0 +1,20 @@
+{
+  "gamePk": 824983,
+  "date": "2026-07-04",
+  "away": "Miami Marlins",
+  "home": "Athletics",
+  "linescoreErrors": {"away": 2, "home": 0},
+  "boxscore": {
+    "away": {"E": "Mack (5, dropped foul); Lopez, O (12, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 80,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 9, "half": "bottom", "chargedTo": "away", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "throwing", "batter": "Henry Bolte", "consequence": "Bolte reached on the throwing error and took second; Cortes scored from second", "runScored": true},
+    {"inning": 8, "half": "bottom", "chargedTo": "away", "fielder": "Joe Mack", "position": "C",
+     "kind": "dropped foul", "batter": null, "consequence": "Mack dropped a foul pop-up; the batter stayed at the plate and then put a ball in play for an out", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

@@ -1,0 +1,20 @@
+{
+  "gamePk": 823871,
+  "date": "2026-05-08",
+  "away": "Washington Nationals",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 2, "home": 0},
+  "boxscore": {
+    "away": {"E": "Mead (4, throw); Abrams (6, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 72,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "bottom", "chargedTo": "away", "fielder": "Curtis Mead", "position": "1B",
+     "kind": "throwing", "batter": "Kyle Stowers", "consequence": "Stowers reached second on the throwing error; Lopez scored", "runScored": true},
+    {"inning": 9, "half": "bottom", "chargedTo": "away", "fielder": "CJ Abrams", "position": "SS",
+     "kind": "throwing", "batter": "Javier Sanoja", "consequence": "Sanoja reached first on the throwing error", "runScored": false}
+  ],
+  "notes": ""
+}

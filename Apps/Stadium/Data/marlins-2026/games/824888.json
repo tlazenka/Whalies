@@ -1,0 +1,20 @@
+{
+  "gamePk": 824888,
+  "date": "2026-08-04",
+  "away": "Miami Marlins",
+  "home": "Atlanta Braves",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Lopez, O (16, throw).", "PB": null},
+    "home": {"E": "Albies (7, fielding).", "PB": null}
+  },
+  "allPlaysCount": 70,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 4, "half": "top", "chargedTo": "home", "fielder": "Ozzie Albies", "position": "2B",
+     "kind": "fielding", "batter": "Otto Lopez", "consequence": "Lopez reached first on Albies's fielding error with nobody on", "runScored": false},
+    {"inning": 7, "half": "bottom", "chargedTo": "away", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "throwing", "batter": "Lane Thomas", "consequence": "Thomas reached first on Lopez's throwing error with the bases empty", "runScored": false}
+  ],
+  "notes": ""
+}

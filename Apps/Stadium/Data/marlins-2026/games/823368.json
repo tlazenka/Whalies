@@ -1,0 +1,20 @@
+{
+  "gamePk": 823368,
+  "date": "2026-06-14",
+  "away": "Miami Marlins",
+  "home": "Pittsburgh Pirates",
+  "linescoreErrors": {"away": 2, "home": 0},
+  "boxscore": {
+    "away": {"E": "Lopez, O (10, throw); Sanoja (7, fielding).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 79,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 6, "half": "bottom", "chargedTo": "away", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "throwing", "batter": "Henry Davis", "consequence": "Davis reached base on the throwing error; no runner advance or run mentioned", "runScored": false},
+    {"inning": 8, "half": "bottom", "chargedTo": "away", "fielder": "Javier Sanoja", "position": "3B",
+     "kind": "fielding", "batter": "Jake Mangum", "consequence": "Mangum reached base on the fielding error; no runner advance or run mentioned", "runScored": false}
+  ],
+  "notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "gamePk": 823866,
+  "date": "2026-05-20",
+  "away": "Atlanta Braves",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Ruiz, E (1, throw).", "PB": "Hicks, L (3)."}
+  },
+  "allPlaysCount": 70,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 8, "half": "top", "chargedTo": "home", "fielder": "Esteury Ruiz", "position": "CF",
+     "kind": "throwing", "batter": "Dominic Smith", "consequence": "Smith tripled and came around to score on the center fielder's throwing error", "runScored": true}
+  ],
+  "notes": ""
+}

@@ -1,0 +1,20 @@
+{
+  "gamePk": 823820,
+  "date": "2026-09-07",
+  "away": "New York Mets",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 2},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Sanoja (12, throw); Mack (10, throw).", "PB": null}
+  },
+  "allPlaysCount": 84,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "top", "chargedTo": "home", "fielder": "Javier Sanoja", "position": "2B",
+     "kind": "throwing", "batter": "Bo Bichette", "consequence": "Bichette reached on a fielder's choice and took second on the throwing error; Juan Soto scored", "runScored": true},
+    {"inning": 1, "half": "top", "chargedTo": "home", "fielder": "Joe Mack", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "Carson Benge stole second and took third on the catcher's throwing error; Bo Bichette scored", "runScored": true, "source": "playEvents"}
+  ],
+  "notes": ""
+}

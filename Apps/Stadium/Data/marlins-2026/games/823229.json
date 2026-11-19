@@ -1,0 +1,18 @@
+{
+  "gamePk": 823229,
+  "date": "2026-04-25",
+  "away": "Miami Marlins",
+  "home": "San Francisco Giants",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Bailey (2, throw).", "PB": null}
+  },
+  "allPlaysCount": 76,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 9, "half": "top", "chargedTo": "home", "fielder": "Patrick Bailey", "position": "C",
+     "kind": "throwing", "batter": "Owen Caissie", "consequence": "Caissie singled and advanced to second on the throwing error", "runScored": false}
+  ],
+  "notes": ""
+}

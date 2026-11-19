@@ -1,0 +1,18 @@
+{
+  "gamePk": 823622,
+  "date": "2026-05-30",
+  "away": "Miami Marlins",
+  "home": "New York Mets",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Jiménez, L (2, throw).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 70,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 3, "half": "bottom", "chargedTo": "away", "fielder": "Leo Jiménez", "position": "3B",
+     "kind": "throwing", "batter": "Vidal Bruján", "consequence": "Bruján safe at first on a sacrifice bunt because of the throwing error; Semien advanced from second to third", "runScored": false}
+  ],
+  "notes": ""
+}

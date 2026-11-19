@@ -1,0 +1,18 @@
+{
+  "gamePk": 823764,
+  "date": "2026-07-19",
+  "away": "Miami Marlins",
+  "home": "Milwaukee Brewers",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Pérez, Eu (2, pickoff).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 67,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 6, "half": "bottom", "chargedTo": "away", "fielder": "Eury Perez", "position": "P",
+     "kind": "pickoff", "batter": null, "consequence": "pickoff throw to second was an error; the fetch did not identify the batter or where the runners ended up; the at-bat ended on a swinging strike", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

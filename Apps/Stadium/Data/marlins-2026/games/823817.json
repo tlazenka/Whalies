@@ -1,0 +1,18 @@
+{
+  "gamePk": 823817,
+  "date": "2026-09-11",
+  "away": "Los Angeles Dodgers",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Muncy (14, fielding).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 79,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 7, "half": "bottom", "chargedTo": "away", "fielder": "Max Muncy", "position": "3B",
+     "kind": "fielding", "batter": "Heriberto Hernandez", "consequence": "Hernandez reached first on the error after a Marlins challenge overturned the original out call; nobody on base", "runScored": false}
+  ],
+  "notes": ""
+}

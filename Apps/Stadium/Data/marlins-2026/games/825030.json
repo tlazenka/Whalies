@@ -1,0 +1,20 @@
+{
+  "gamePk": 825030,
+  "date": "2026-09-15",
+  "away": "Miami Marlins",
+  "home": "Arizona Diamondbacks",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Lopez, O (21, throw).", "PB": null},
+    "home": {"E": "Fernandez, Jo (6, fielding).", "PB": null}
+  },
+  "allPlaysCount": 90,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 8, "half": "bottom", "chargedTo": "away", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "throwing", "batter": "Jose Fernandez", "consequence": "Fernandez reached on the throwing error", "runScored": false},
+    {"inning": 9, "half": "top", "chargedTo": "home", "fielder": "Jose Fernandez", "position": "3B",
+     "kind": "fielding", "batter": "Esteury Ruiz", "consequence": "Ruiz reached on the fielding error; nobody on base", "runScored": false}
+  ],
+  "notes": "Box-score fetch returned both E lines but the fetch model judged that JSON possibly truncated by one closing brace; play counts match the box score."
+}

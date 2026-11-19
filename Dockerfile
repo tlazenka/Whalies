@@ -6,4 +6,5 @@ RUN apt-get update \
 
 WORKDIR /workspace
 COPY . .
-RUN swift build
+RUN swift build --product whaley \
+    && swift build --product whaley-relay

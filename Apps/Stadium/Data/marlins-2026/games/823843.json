@@ -1,0 +1,22 @@
+{
+  "gamePk": 823843,
+  "date": "2026-07-24",
+  "away": "San Diego Padres",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 2},
+  "boxscore": {
+    "away": {"E": "Bogaerts (5, fielding).", "PB": null},
+    "home": {"E": "Hernández, H (2, fielding); Mack (6, throw).", "PB": null}
+  },
+  "allPlaysCount": 79,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 1, "half": "bottom", "chargedTo": "away", "fielder": "Xander Bogaerts", "position": "SS",
+     "kind": "fielding", "batter": "Otto Lopez", "consequence": "Lopez reached base on the fielding error; he was the only runner", "runScored": false},
+    {"inning": 5, "half": "top", "chargedTo": "home", "fielder": "Heriberto Hernandez", "position": "LF",
+     "kind": "fielding", "batter": "Manny Machado", "consequence": "Machado singled and took second on the fielding error; Bogaerts scored, Cronenworth to third", "runScored": true},
+    {"inning": 8, "half": "top", "chargedTo": "home", "fielder": "Joe Mack", "position": "C",
+     "kind": "throwing", "batter": null, "consequence": "Xander Bogaerts stole second and took third on the catcher's throwing error", "runScored": false, "source": "playEvents"}
+  ],
+  "notes": ""
+}

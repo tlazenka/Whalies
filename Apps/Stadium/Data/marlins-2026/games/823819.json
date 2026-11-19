@@ -1,0 +1,18 @@
+{
+  "gamePk": 823819,
+  "date": "2026-09-12",
+  "away": "Los Angeles Dodgers",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Betts (8, throw).", "PB": "Feduccia (6)."},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 74,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 5, "half": "bottom", "chargedTo": "away", "fielder": "Mookie Betts", "position": "SS",
+     "kind": "throwing", "batter": "Javier Sanoja", "consequence": "Sanoja reached on a fielder's choice with a throwing error; Otto Lopez to third, Jakob Marsee to second; Griffin Conine scored", "runScored": true}
+  ],
+  "notes": ""
+}

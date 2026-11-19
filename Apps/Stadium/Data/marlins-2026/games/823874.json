@@ -1,0 +1,20 @@
+{
+  "gamePk": 823874,
+  "date": "2026-05-04",
+  "away": "Philadelphia Phillies",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 1, "home": 1},
+  "boxscore": {
+    "away": {"E": "Turner (5, fielding).", "PB": null},
+    "home": {"E": "Lopez, O (7, fielding).", "PB": null}
+  },
+  "allPlaysCount": 68,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 2, "half": "top", "chargedTo": "home", "fielder": "Otto Lopez", "position": "SS",
+     "kind": "fielding", "batter": "Alec Bohm", "consequence": "Bohm reached first on a fielder's choice; Marsh advanced to second on the error", "runScored": false},
+    {"inning": 7, "half": "bottom", "chargedTo": "away", "fielder": "Trea Turner", "position": "SS",
+     "kind": "fielding", "batter": "Xavier Edwards", "consequence": "Edwards reached first on the error", "runScored": false}
+  ],
+  "notes": ""
+}

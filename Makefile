@@ -1,86 +1,73 @@
-.PHONY: test-app test-likes test-contracts test-integration test-tacky feed-server earthquakes-cli swift-tests xcode-project
+PYTHON ?= python3
 
-test-app:
-	docker compose --profile test run --rm app sbt test
+.PHONY: test python-tests swift-tests xcode-project format format-objc whaley-query \
+  web-server whaley2010-verify \
+  whaley2010-project whaley3d-verify whaley-archive-check whaley2010-archive-check \
+  whaley-scala-check whaley-scala-web whaley-scala-native whaley-scala-run web-server-smoke stadium-integration-check \
+  whaley-pages whaley-pages-check whaley-pages-publish
 
-test-likes:
-	docker compose --profile test run --rm likes-test
-
-test-contracts:
-	docker compose --profile test run --rm contracts-test
-
-test-integration:
-	docker compose --profile test run --rm integration-tests
-
-test-tacky:
-	docker compose run --rm likes-test
-	
-feed-server:
-	docker compose up --build postgres feed-server
-
-earthquakes-cli:
-	docker compose run --rm earthquakes-cli $(ARGS)
-
-swift-tests:
-	docker compose run --rm swift-tests
-
-xcode-project:
-	cd Demos && xcodegen generate
-
-.PHONY: test
 test:
 	swift test
-	
-.PHONY: format
+
+python-tests:
+	"$(PYTHON)" python/whaley.py test
+
+swift-tests:
+	docker compose --profile test run --rm swift-tests
+
+xcode-project:
+	cd Apps && xcodegen generate
+
 format:
-	swift format --in-place --recursive . 
+	swift format . --recursive --in-place
 
-.PHONY: format-objc
 format-objc:
-	find . -type f \( -name '*.h' -o -name '*.m' \) -exec clang-format -i {} +
-	
-.PHONY: test-docker
-test-docker:
-	docker-compose run --rm tests
-	
-.PHONY: format-docker
-format-docker:
-	docker-compose run --rm format
+	find Sources Apps -type f \( -name '*.h' -o -name '*.m' \) -exec clang-format -i {} +
 
-.PHONY: format-swift
-format-swift:
-	swift format . --recursive --in-place 
+whaley-query:
+	docker compose --profile cli run --rm whaley-cli query $(ARGS)
 
-.PHONY: format-kotlin
-format-kotlin:
-	ktfmt --enable-editorconfig . 
-	
-.PHONY: test-swift
-test-swift:
-	swift test
+web-server:
+	docker compose up --build db server
 
-.PHONY: test-swift-docker
-test-swift-docker:
-	docker-compose run --rm test-swift
+web-server-smoke:
+	bash scripts/verify-whaley-ssr.sh
 
-.PHONY: format-swift-docker
-format-swift-docker:
-	docker-compose run --rm format-swift
+whaley2010-verify:
+	bash Apps/Whaley2010/verify-engine.sh
 
-.PHONY: build-kotlin
-build-kotlin:
-	./gradlew :witness-annotations:publishToMavenLocal :witness-runtime:publishToMavenLocal :witness-processor:publishToMavenLocal
+whaley2010-project: whaley2010-verify
+	cd Apps && xcodegen generate
 
-.PHONY: run-ktor
-run-ktor:
-	cd examples/ktor-server && gradle clean run --no-daemon --refresh-dependencies
+whaley3d-verify:
+	bash Apps/Whaley/check-3d-projection.sh
 
-.PHONY: build-android
-build-android:
-	cd examples/android  && gradle clean assembleDebug --refresh-dependencies --no-daemon
+whaley-archive-check:
+	bash Apps/Whaley/check-archive-link.sh
 
-.PHONY: build-kotlin-docker
-build-kotlin-docker:
-	docker-compose run --rm build-kotlin
-        
+whaley-scala-check:
+	"$(PYTHON)" python/whaley.py sbt -- check
 
+whaley-scala-web:
+	"$(PYTHON)" python/whaley.py sbt -- web/stage
+
+whaley-pages:
+	"$(PYTHON)" python/whaley.py web package --target pages
+
+whaley-pages-check: whaley-pages
+	cd Scala && npm run test:pages
+
+whaley-pages-publish: whaley-pages-check
+	"$(PYTHON)" python/whaley.py web publish
+
+whaley-scala-native:
+	"$(PYTHON)" python/whaley.py sbt -- nativeApp/stageNative
+
+whaley-scala-run:
+	"$(PYTHON)" python/whaley.py sbt -- nativeApp/runNative
+
+whaley2010-archive-check:
+	bash Apps/Whaley2010/check-appstore-archive.sh
+
+stadium-integration-check:
+	bash scripts/check-stadium-integration.sh

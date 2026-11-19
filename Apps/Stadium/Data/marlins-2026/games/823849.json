@@ -1,0 +1,18 @@
+{
+  "gamePk": 823849,
+  "date": "2026-06-23",
+  "away": "Texas Rangers",
+  "home": "Miami Marlins",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Zuber (1, throw).", "PB": null}
+  },
+  "allPlaysCount": 79,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 8, "half": "top", "chargedTo": "home", "fielder": "Tyler Zuber", "position": "P",
+     "kind": "throwing", "batter": "Ezequiel Duran", "consequence": "Duran singled on a grounder to the pitcher and took second on the throwing error; no other runners on", "runScored": false}
+  ],
+  "notes": ""
+}

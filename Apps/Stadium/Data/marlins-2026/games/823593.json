@@ -1,0 +1,18 @@
+{
+  "gamePk": 823593,
+  "date": "2026-07-31",
+  "away": "Miami Marlins",
+  "home": "New York Mets",
+  "linescoreErrors": {"away": 1, "home": 0},
+  "boxscore": {
+    "away": {"E": "Stowers (7, fielding).", "PB": null},
+    "home": {"E": null, "PB": null}
+  },
+  "allPlaysCount": 72,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 5, "half": "bottom", "chargedTo": "away", "fielder": "Kyle Stowers", "position": "1B",
+     "kind": "fielding", "batter": "Jorge Polanco", "consequence": "Polanco reached first on Stowers's fielding error", "runScored": false}
+  ],
+  "notes": ""
+}

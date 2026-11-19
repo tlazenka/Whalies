@@ -1,0 +1,56 @@
+name: Stadium integration
+
+on:
+  pull_request:
+    branches: [develop]
+    paths:
+      - 'Apps/Stadium/**'
+      - 'Apps/StadiumApp/**'
+      - 'Apps/Whaley/**'
+      - 'Apps/WhaleyCompatibilityTests/**'
+      - 'Apps/project.yml'
+      - 'python/**'
+      - 'Sources/WhaleyHost/**'
+      - 'Sources/WhaleyCore/**'
+      - 'Sources/WhaleyObjectiveC/**'
+      - 'Sources/JSONViewKit/**'
+      - 'Tests/JSONViewKitTests/**'
+      - 'Package.swift'
+      - 'scripts/check-stadium-integration.sh'
+      - '.github/workflows/stadium-integration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stadium-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  portable:
+    runs-on: ubuntu-latest
+    container: swift:6.4
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install SQLite headers
+        run: apt-get update && apt-get install -y libsqlite3-dev
+      - name: Test Stadium rules, recorded Whaley outcomes, and shared Explorer
+        run: swift test --package-path Apps/Stadium
+
+  apple:
+    runs-on: xcode-27
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Build, test, and archive the shared native implementations
+        run: bash scripts/check-stadium-integration.sh
+      - name: Preserve compiler and test output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stadium-integration-logs
+          path: .build/integration-logs
+          if-no-files-found: ignore

@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "whaley-tools"
+dynamic = ["version"]
+description = "Build, package, publish and verify the WhaleKart repository"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = []
+
+[project.scripts]
+whaley-tools = "whaley_tools.bootstrap:main"
+
+[project.urls]
+Repository = "https://github.com/tlazenka/chatgpt-WhaleKart"
+
+[tool.setuptools]
+include-package-data = false
+py-modules = ["whaley"]
+
+[tool.setuptools.packages.find]
+include = ["whaley_tools*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "whaley_tools.__version__"}

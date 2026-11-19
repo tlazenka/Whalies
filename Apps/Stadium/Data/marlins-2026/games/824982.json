@@ -1,0 +1,18 @@
+{
+  "gamePk": 824982,
+  "date": "2026-07-03",
+  "away": "Miami Marlins",
+  "home": "Athletics",
+  "linescoreErrors": {"away": 0, "home": 1},
+  "boxscore": {
+    "away": {"E": null, "PB": null},
+    "home": {"E": "Williams (4, fielding).", "PB": "Langeliers (6)."}
+  },
+  "allPlaysCount": 86,
+  "playByPlayComplete": true,
+  "plays": [
+    {"inning": 4, "half": "top", "chargedTo": "home", "fielder": "Alika Williams", "position": "SS",
+     "kind": "fielding", "batter": "Heriberto Hernandez", "consequence": "Hernandez reached base on the fielding error; Stowers moved to third and Edwards to second", "runScored": false}
+  ],
+  "notes": ""
+}

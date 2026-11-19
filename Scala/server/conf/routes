@@ -1,0 +1,3 @@
+GET     /            whaley.server.HomeController.index
+GET     /health      whaley.server.HomeController.health
+GET     /assets/*file    controllers.Assets.at(path="/public/assets", file)
